@@ -2,14 +2,12 @@
 
 A modern, responsive clothing shopping website built with Next.js and Tailwind CSS.
 
-## Features
+## 👥 Team Members
 
-- 🛍️ **Product Catalog**: Browse through a curated collection of clothing items
-- 🛒 **Shopping Cart**: Add items to cart with quantity management
-- 💳 **Checkout Process**: Complete orders with user information
-- 📱 **Responsive Design**: Optimized for desktop, tablet, and mobile devices
-- 🎨 **Modern UI**: Beautiful design with Tailwind CSS
-- ⚡ **Fast Performance**: Built with Next.js for optimal performance
+- **Win Yu Maung**
+- **Sam Yati**
+- **Phonvan Deelertpattana**
+
 
 ## Tech Stack
 
