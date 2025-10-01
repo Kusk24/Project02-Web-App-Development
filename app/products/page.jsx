@@ -14,11 +14,90 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+// Sample product data
+const products = [
+  {
+    id: 1,
+    name: "Classic White T-Shirt",
+    price: 29.99,
+    originalPrice: 39.99,
+    image: "/api/placeholder/400/400",
+    rating: 4.5,
+    reviews: 128,
+    sizes: ["XS", "S", "M", "L", "XL"],
+    description:
+      "Premium cotton t-shirt with a comfortable fit. Perfect for everyday wear.",
+    sale: true,
+  },
+  {
+    id: 2,
+    name: "Denim Jacket",
+    price: 89.99,
+    image: "/api/placeholder/400/400",
+    rating: 4.8,
+    reviews: 95,
+    sizes: ["S", "M", "L", "XL"],
+    description:
+      "Classic denim jacket with a modern cut. Made from high-quality denim.",
+    sale: false,
+  },
+  {
+    id: 3,
+    name: "Black Jeans",
+    price: 79.99,
+    image: "/api/placeholder/400/400",
+    rating: 4.3,
+    reviews: 210,
+    sizes: ["28", "30", "32", "34", "36"],
+    description:
+      "Slim-fit black jeans with stretch for comfort and style.",
+    sale: false,
+  },
+  {
+    id: 4,
+    name: "Floral Summer Dress",
+    price: 65.99,
+    originalPrice: 85.99,
+    image: "/api/placeholder/400/400",
+    rating: 4.7,
+    reviews: 156,
+    sizes: ["XS", "S", "M", "L"],
+    description: "Light and airy floral dress perfect for summer days.",
+    sale: true,
+  },
+  {
+    id: 5,
+    name: "Wool Sweater",
+    price: 120.0,
+    image: "/api/placeholder/400/400",
+    rating: 4.6,
+    reviews: 89,
+    sizes: ["S", "M", "L", "XL"],
+    description:
+      "Cozy wool sweater for cold weather. Premium merino wool blend.",
+    sale: false,
+  },
+  {
+    id: 6,
+    name: "Running Shoes",
+    price: 149.99,
+    image: "/api/placeholder/400/400",
+    rating: 4.9,
+    reviews: 342,
+    sizes: ["7", "8", "9", "10", "11", "12"],
+    description: "High-performance running shoes with advanced cushioning.",
+    sale: false,
+  },
+];
+
 export default function ProductsPage() {
   const [clothes, setClothes] = useState([]);
   const [cart, setCart] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("name");
+  const [selectedSizes, setSelectedSizes] = useState({});
+  const [addedToCart, setAddedToCart] = useState({});
+  const [cartCount, setCartCount] = useState(0);
 
   // Fetch products
   useEffect(() => {
@@ -39,6 +118,12 @@ export default function ProductsPage() {
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
+
+  // Load cart count on component mount
+  useEffect(() => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCartCount(cart.reduce((sum, item) => sum + (item.quantity || 1), 0));
+  }, []);
 
   // Get unique categories
   const categories = ["All", ...new Set(clothes.map((item) => item.category))];
@@ -65,32 +150,78 @@ export default function ProductsPage() {
       }
     });
 
+  // Handle size selection
+  const handleSizeSelect = (productId, size) => {
+    setSelectedSizes((prev) => ({
+      ...prev,
+      [productId]: size,
+    }));
+  };
+
   // Add to cart - modified to save to localStorage
-  const addToCart = (item) => {
-    const existingItem = cart.find(
-      (cartItem) => cartItem.id === item.id && cartItem.size === item.size
-    );
-    if (existingItem) {
-      setCart(
-        cart.map((cartItem) =>
-          cartItem.id === item.id && cartItem.size === item.size
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        )
-      );
-    } else {
-      setCart([...cart, { ...item, quantity: 1 }]);
+  const addToCart = (product) => {
+    const selectedSize = selectedSizes[product.id];
+
+    if (!selectedSize) {
+      alert("Please select a size first!");
+      return;
     }
 
-    // Show success message
-    alert("✅ Item added to cart!");
+    const cartItem = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      size: selectedSize,
+      image: product.image,
+      quantity: 1,
+    };
+
+    // Get existing cart
+    const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    // Check if item with same product and size already exists
+    const existingItemIndex = existingCart.findIndex(
+      (item) => item.id === product.id && item.size === selectedSize
+    );
+
+    if (existingItemIndex >= 0) {
+      // Update quantity if item exists
+      existingCart[existingItemIndex].quantity += 1;
+    } else {
+      // Add new item
+      existingCart.push(cartItem);
+    }
+
+    // Save to localStorage
+    localStorage.setItem("cart", JSON.stringify(existingCart));
+
+    // Update cart count
+    const newCartCount = existingCart.reduce(
+      (sum, item) => sum + (item.quantity || 1),
+      0
+    );
+    setCartCount(newCartCount);
+
+    // Dispatch event for other components
+    window.dispatchEvent(new Event("cartUpdated"));
+
+    // Show success feedback
+    setAddedToCart((prev) => ({
+      ...prev,
+      [product.id]: true,
+    }));
+
+    setTimeout(() => {
+      setAddedToCart((prev) => ({
+        ...prev,
+        [product.id]: false,
+      }));
+    }, 2000);
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header
-        cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
-      />
+      <Header cartCount={cartCount} />
 
       {/* Page Header */}
       <div className="bg-white shadow-sm">
@@ -144,19 +275,34 @@ export default function ProductsPage() {
                   <SelectValue placeholder="Select sorting option" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-md z-50">
-                  <SelectItem value="name-asc" className="bg-white hover:bg-gray-50 focus:bg-gray-50">
+                  <SelectItem
+                    value="name-asc"
+                    className="bg-white hover:bg-gray-50 focus:bg-gray-50"
+                  >
                     Name (A-Z)
                   </SelectItem>
-                  <SelectItem value="name-desc" className="bg-white hover:bg-gray-50 focus:bg-gray-50">
+                  <SelectItem
+                    value="name-desc"
+                    className="bg-white hover:bg-gray-50 focus:bg-gray-50"
+                  >
                     Name (Z-A)
                   </SelectItem>
-                  <SelectItem value="price-low" className="bg-white hover:bg-gray-50 focus:bg-gray-50">
+                  <SelectItem
+                    value="price-low"
+                    className="bg-white hover:bg-gray-50 focus:bg-gray-50"
+                  >
                     Price: Low to High
                   </SelectItem>
-                  <SelectItem value="price-high" className="bg-white hover:bg-gray-50 focus:bg-gray-50">
+                  <SelectItem
+                    value="price-high"
+                    className="bg-white hover:bg-gray-50 focus:bg-gray-50"
+                  >
                     Price: High to Low
                   </SelectItem>
-                  <SelectItem value="newest" className="bg-white hover:bg-gray-50 focus:bg-gray-50">
+                  <SelectItem
+                    value="newest"
+                    className="bg-white hover:bg-gray-50 focus:bg-gray-50"
+                  >
                     Newest First
                   </SelectItem>
                 </SelectContent>
@@ -220,6 +366,9 @@ export default function ProductsPage() {
                   key={`${product.id}-${product.size}`}
                   product={product}
                   onAddToCart={addToCart}
+                  onSizeSelect={handleSizeSelect}
+                  addedToCart={addedToCart[product.id]}
+                  setAddedToCart={setAddedToCart}
                 />
               ))}
             </div>

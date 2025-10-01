@@ -6,9 +6,9 @@ import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import { Button } from "@/components/ui/button";
 
-export default function HomePage() {
+export default function Home() {
   const [clothes, setClothes] = useState([]);
-  const [cart, setCart] = useState([]);
+  const [cartCount, setCartCount] = useState(0);
 
   // Fetch products
   useEffect(() => {
@@ -21,43 +21,58 @@ export default function HomePage() {
   useEffect(() => {
     const savedCart = localStorage.getItem("cart");
     if (savedCart) {
-      setCart(JSON.parse(savedCart));
+      setCartCount(JSON.parse(savedCart).length);
     }
   }, []);
 
-  // Save cart to localStorage whenever cart changes
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
   // Add to cart
   const addToCart = (item) => {
-    console.log("Adding to cart:", item.name);
-    const existingItem = cart.find(
-      (cartItem) => cartItem.id === item.id && cartItem.size === item.size
-    );
-    if (existingItem) {
-      setCart(
-        cart.map((cartItem) =>
-          cartItem.id === item.id && cartItem.size === item.size
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        )
-      );
-    } else {
-      setCart([...cart, { ...item, quantity: 1 }]);
-    }
+    try {
+      console.log("Adding to cart:", item.name);
 
-    // Show success message
-    alert("✅ Item added to cart!");
-    console.log("Cart after add:", cart);
+      // Get existing cart
+      const existingCart = localStorage.getItem("cart");
+      const cart = existingCart ? JSON.parse(existingCart) : [];
+
+      // Check if item already exists
+      const existingItemIndex = cart.findIndex(
+        (cartItem) => cartItem.id === item.id && cartItem.size === item.size
+      );
+
+      if (existingItemIndex > -1) {
+        // Update quantity if exists
+        cart[existingItemIndex].quantity += 1;
+      } else {
+        // Add new item
+        cart.push({
+          ...item,
+          quantity: 1,
+          addedAt: new Date().toISOString(),
+        });
+      }
+
+      // Save to localStorage
+      localStorage.setItem("cart", JSON.stringify(cart));
+
+      // Update cart count
+      setCartCount(cart.length);
+
+      // Dispatch custom event for header to update
+      window.dispatchEvent(new Event("cartUpdated"));
+
+      // Show success message
+      alert("✅ Item added to cart!");
+
+      console.log("Cart after add:", cart);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      alert("❌ Failed to add item to cart");
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header
-        cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
-      />
+      <Header cartCount={cartCount} />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-black to-gray-800 text-white">

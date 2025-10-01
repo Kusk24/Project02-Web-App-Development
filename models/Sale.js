@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const saleSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
+    ref: 'User',
     required: true
   },
   date: {
@@ -17,8 +17,8 @@ const saleSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'shipped', 'delivered', 'cancelled'],
-    default: 'pending'
+    enum: ['paid', 'unpaid', 'cancelled'],
+    default: 'unpaid'
   },
   items: [{
     id: Number,
@@ -28,10 +28,30 @@ const saleSchema = new mongoose.Schema({
       type: Number,
       min: 1
     },
-    image: String
-  }]
+    image: String,
+    size: String
+  }],
+  // Additional fields for order functionality
+  paymentProof: {
+    type: String,
+    default: null
+  },
+  deliveryEstimate: {
+    type: String,
+    default: null
+  },
+  cancellationDeadline: {
+    type: String,
+    default: null
+  },
+  userInfo: {
+    name: String,
+    email: String,
+    phone: String,
+    address: String
+  }
 });
 
-const Sale = mongoose.models.sale || mongoose.model("sale", saleSchema);
+const Sale = mongoose.models.Sale || mongoose.model("Sale", saleSchema);
 
 export default Sale;
