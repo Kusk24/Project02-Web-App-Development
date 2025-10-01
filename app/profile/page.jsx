@@ -19,6 +19,11 @@ export default function ProfilePage() {
     router.push("/login");
   };
 
+  const tabs = [
+    { id: "orders", label: "My Orders" },
+    { id: "settings", label: "Settings" },
+  ];
+
   if (!user) return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-xl">Loading...</div></div>;
 
   return (

@@ -101,9 +101,23 @@ export default function ProductsPage() {
 
   // Fetch products
   useEffect(() => {
-    fetch("/api/clothes")
-      .then((res) => res.json())
-      .then(setClothes);
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("/api/clothes");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('✅ Fetched products from database:', data.length, 'items');
+        setClothes(data);
+      } catch (error) {
+        console.error("❌ Error fetching products:", error);
+        alert("Failed to load products from database. Check console for details.");
+        setClothes([]);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   // Load cart from localStorage

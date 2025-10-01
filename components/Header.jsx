@@ -70,13 +70,15 @@ export default function Header({ cartCount: initialCartCount = 0 }) {
             <Link href="/shop" className="text-gray-600 hover:text-black font-medium transition-colors duration-200 py-2 px-1 border-b-2 border-transparent hover:border-black">
               Shop
             </Link>
-            <Link href="/sale" className="text-gray-600 hover:text-black font-medium transition-colors duration-200 py-2 px-1 border-b-2 border-transparent hover:border-black">
-              Sale
-            </Link>
             {user && (
-              <Link href="/history" className="text-gray-600 hover:text-black font-medium transition-colors duration-200 py-2 px-1 border-b-2 border-transparent hover:border-black">
-                Orders
-              </Link>
+              <>
+                <Link href="/profile" className="text-gray-600 hover:text-black font-medium transition-colors duration-200 py-2 px-1 border-b-2 border-transparent hover:border-black">
+                  Profile
+                </Link>
+                <Link href="/history" className="text-gray-600 hover:text-black font-medium transition-colors duration-200 py-2 px-1 border-b-2 border-transparent hover:border-black">
+                  Orders
+                </Link>
+              </>
             )}
           </nav>
 
@@ -95,10 +97,10 @@ export default function Header({ cartCount: initialCartCount = 0 }) {
             {/* User Authentication */}
             {user ? (
               <div className="hidden md:flex items-center space-x-2">
-                <div className="flex items-center space-x-2 px-3 py-2 bg-gray-50 rounded-full">
+                <Link href="/profile" className="flex items-center space-x-2 px-3 py-2 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors">
                   <User className="w-4 h-4 text-gray-600" />
                   <span className="text-sm font-medium text-gray-700">{user.name}</span>
-                </div>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 group"
@@ -148,21 +150,23 @@ export default function Header({ cartCount: initialCartCount = 0 }) {
               >
                 Shop
               </Link>
-              <Link
-                href="/sale"
-                className="block px-4 py-3 text-gray-600 hover:text-black hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Sale
-              </Link>
               {user && (
-                <Link
-                  href="/history"
-                  className="block px-4 py-3 text-gray-600 hover:text-black hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Orders
-                </Link>
+                <>
+                  <Link
+                    href="/profile"
+                    className="block px-4 py-3 text-gray-600 hover:text-black hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    href="/history"
+                    className="block px-4 py-3 text-gray-600 hover:text-black hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Orders
+                  </Link>
+                </>
               )}
               
               {/* Mobile Auth */}

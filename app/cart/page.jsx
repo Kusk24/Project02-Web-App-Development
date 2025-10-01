@@ -26,46 +26,54 @@ export default function CartPage() {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  // Load cart from localStorage
+  // Load cart from localStorage ONLY on mount
   useEffect(() => {
+    const loadCart = () => {
+      try {
+        const savedCart = localStorage.getItem("cart");
+        if (savedCart) {
+          const parsedCart = JSON.parse(savedCart);
+          setCart(Array.isArray(parsedCart) ? parsedCart : []);
+        } else {
+          setCart([]);
+        }
+      } catch (error) {
+        console.error("Error loading cart:", error);
+        setCart([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     loadCart();
-    window.addEventListener("storage", loadCart);
-    window.addEventListener("cartUpdated", loadCart);
+
+    // Listen for external cart updates
+    const handleCartUpdate = () => {
+      loadCart();
+    };
+
+    window.addEventListener("cartUpdated", handleCartUpdate);
 
     return () => {
-      window.removeEventListener("storage", loadCart);
-      window.removeEventListener("cartUpdated", loadCart);
+      window.removeEventListener("cartUpdated", handleCartUpdate);
     };
-  }, []);
+  }, []); // Empty dependency array - only run once on mount
 
-  const loadCart = () => {
-    try {
-      const savedCart = localStorage.getItem("cart");
-      if (savedCart) {
-        const parsedCart = JSON.parse(savedCart);
-        setCart(Array.isArray(parsedCart) ? parsedCart : []);
-      } else {
-        setCart([]);
-      }
-    } catch (error) {
-      console.error("Error loading cart:", error);
-      setCart([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Save cart to localStorage whenever cart changes
+  // Save cart to localStorage whenever cart changes (but don't trigger reload)
   useEffect(() => {
-    if (!isLoading) {
-      localStorage.setItem('cart', JSON.stringify(cart));
-      window.dispatchEvent(new Event("cartUpdated"));
+    if (!isLoading && cart.length >= 0) {
+      try {
+        localStorage.setItem('cart', JSON.stringify(cart));
+        // Don't dispatch event here to avoid infinite loop
+      } catch (error) {
+        console.error("Error saving cart:", error);
+      }
     }
   }, [cart, isLoading]);
 
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-  // Update cart quantity - Fixed the logic
+  // Update cart quantity
   const updateQuantity = (index, change) => {
     const newCart = [...cart];
     const newQuantity = (newCart[index].quantity || 1) + change;
@@ -126,6 +134,8 @@ export default function CartPage() {
     setUploading(true);
 
     try {
+      const token = localStorage.getItem('token');
+      
       const orderData = {
         user: userInfo,
         items: cart,
@@ -137,18 +147,27 @@ export default function CartPage() {
         cancellationDeadline: uploadChoice === 'later' ? calculateCancellationDate() : null,
       };
 
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      console.log('Submitting order to database:', orderData);
+
       const response = await fetch('/api/orders', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify(orderData),
       });
 
       if (response.ok) {
         const savedOrder = await response.json();
+        console.log('Order saved to database:', savedOrder);
         
-        // Save to localStorage as 'orders' to match history page
+        // Also save to localStorage as backup
         const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
         existingOrders.push(savedOrder);
         localStorage.setItem('orders', JSON.stringify(existingOrders));
@@ -165,9 +184,12 @@ export default function CartPage() {
           setUploadChoice(null);
           setUserInfo({ name: "", email: "", phone: "", address: "" });
           window.dispatchEvent(new Event("cartUpdated"));
+          router.push('/history');
         }, 3000);
       } else {
-        alert('Failed to submit order. Please try again.');
+        const error = await response.json();
+        console.error('Order submission failed:', error);
+        alert(`Failed to submit order: ${error.message || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error submitting order:', error);
