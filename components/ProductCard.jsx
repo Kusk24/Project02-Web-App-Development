@@ -5,7 +5,7 @@ export default function ProductCard({ product, onAddToCart }) {
   const [imageError, setImageError] = useState(false);
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden">
       {/* Product Image */}
       <div className="relative overflow-hidden">
         {!imageError ? (
@@ -17,11 +17,11 @@ export default function ProductCard({ product, onAddToCart }) {
               )}`
             }
             alt={product.name}
-            className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-48 object-cover"
             onError={() => setImageError(true)}
           />
         ) : (
-          <div className="w-full h-64 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+          <div className="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
             <div className="text-center">
               <div className="text-4xl mb-2">👕</div>
               <div className="text-black font-medium">{product.name}</div>
@@ -39,7 +39,7 @@ export default function ProductCard({ product, onAddToCart }) {
 
       {/* Product Info */}
       <div className="p-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+        <h3 className="text-lg font-semibold mb-2 line-clamp-2">
           {product.name}
         </h3>
 
@@ -68,7 +68,7 @@ export default function ProductCard({ product, onAddToCart }) {
         {/* Add to Cart Button */}
         <button
           onClick={() => onAddToCart(product)}
-          className="w-full bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-200 font-medium"
+          className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-200 font-medium"
         >
           Add to Cart
         </button>
