@@ -7,27 +7,57 @@ import Footer from "../../components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { useAuth } from "../../context/AuthContext";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const router = useRouter();
+  const { login } = useAuth();
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Email is invalid";
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
 
-    // Mock authentication
-    setTimeout(() => {
-      if (email === "john@example.com" && password === "password") {
-        document.cookie = "auth-token=mock-token; path=/";
+    try {
+      const result = await login(email, password);
+      
+      if (result.success) {
+        alert("✅ Login successful!");
         router.push("/profile");
       } else {
-        alert("Invalid credentials");
+        alert(result.message || "Invalid credentials");
       }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Network error. Please try again.");
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -59,8 +89,15 @@ export default function LoginPage() {
                     required
                     placeholder="Enter your email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (errors.email)
+                        setErrors((prev) => ({ ...prev, email: "" }));
+                    }}
                   />
+                  {errors.email && (
+                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                  )}
                 </div>
 
                 <div>
@@ -73,20 +110,36 @@ export default function LoginPage() {
                     required
                     placeholder="Enter your password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (errors.password)
+                        setErrors((prev) => ({ ...prev, password: "" }));
+                    }}
                   />
+                  {errors.password && (
+                    <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                  )}
                 </div>
 
-                <Button type="submit" disabled={loading} className="w-full" size="lg">
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full"
+                  size="lg"
+                >
                   {loading ? "Signing In..." : "Sign In"}
                 </Button>
               </form>
 
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 text-center">
-                  <strong>Demo Account:</strong><br />
-                  Email: john@example.com<br />
-                  Password: password
+              <div className="mt-6 text-center">
+                <p className="text-sm text-gray-600">
+                  Don't have an account?{" "}
+                  <a
+                    href="/register"
+                    className="font-medium text-indigo-600 hover:text-indigo-500"
+                  >
+                    Sign up
+                  </a>
                 </p>
               </div>
             </CardContent>

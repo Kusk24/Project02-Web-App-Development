@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Cart({
   isOpen,
@@ -14,12 +14,33 @@ export default function Cart({
   const [proofFile, setProofFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [user, setUser] = useState(null);
+  
   const [userInfo, setUserInfo] = useState({
     name: "",
     email: "",
     phone: "",
     address: "",
   });
+
+  useEffect(() => {
+    // Load user from localStorage
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+        setUserInfo({
+          name: userData.name || "",
+          email: userData.email || "",
+          phone: userData.phone || "",
+          address: userData.address || "",
+        });
+      }
+    } catch (error) {
+      console.error('Error loading user data:', error);
+    }
+  }, []);
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 

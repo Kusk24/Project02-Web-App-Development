@@ -5,59 +5,89 @@ import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
-export default function HomePage() {
+export default function Home() {
   const [clothes, setClothes] = useState([]);
-  const [cart, setCart] = useState([]);
+  const [cartCount, setCartCount] = useState(0);
 
   // Fetch products
   useEffect(() => {
-    fetch("/api/clothes")
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+
+    fetch(`${apiUrl}/api/clothes`)
       .then((res) => res.json())
-      .then(setClothes);
+      .then(setClothes)
+      .catch((error) => console.error("Error fetching clothes:", error));
   }, []);
 
   // Load cart from localStorage
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
+    try {
+      const savedCart = localStorage.getItem("cart");
+      if (savedCart) {
+        const cart = JSON.parse(savedCart);
+        const count = cart.reduce(
+          (sum, item) => sum + (item.quantity || 1),
+          0
+        );
+        setCartCount(count);
+      }
+    } catch (error) {
+      console.error("Error loading cart:", error);
+      setCartCount(0);
     }
   }, []);
 
-  // Save cart to localStorage whenever cart changes
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
   // Add to cart
   const addToCart = (item) => {
-    console.log("Adding to cart:", item.name);
-    const existingItem = cart.find(
-      (cartItem) => cartItem.id === item.id && cartItem.size === item.size
-    );
-    if (existingItem) {
-      setCart(
-        cart.map((cartItem) =>
-          cartItem.id === item.id && cartItem.size === item.size
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        )
-      );
-    } else {
-      setCart([...cart, { ...item, quantity: 1 }]);
-    }
+    try {
+      console.log("Adding to cart:", item.name);
 
-    // Show success message
-    alert("✅ Item added to cart!");
-    console.log("Cart after add:", cart);
+      // Get existing cart
+      const existingCart = localStorage.getItem("cart");
+      const cart = existingCart ? JSON.parse(existingCart) : [];
+
+      // Check if item already exists
+      const existingItemIndex = cart.findIndex(
+        (cartItem) => cartItem.id === item.id && cartItem.size === item.size
+      );
+
+      if (existingItemIndex > -1) {
+        // Update quantity if exists
+        cart[existingItemIndex].quantity += 1;
+      } else {
+        // Add new item
+        cart.push({
+          ...item,
+          quantity: 1,
+          addedAt: new Date().toISOString(),
+        });
+      }
+
+      // Save to localStorage
+      localStorage.setItem("cart", JSON.stringify(cart));
+
+      // Update cart count
+      const newCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+      setCartCount(newCount);
+
+      // Dispatch custom event for header to update
+      window.dispatchEvent(new Event("cartUpdated"));
+
+      // Show success message
+      alert("✅ Item added to cart!");
+
+      console.log("Cart after add:", cart);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      alert("❌ Failed to add item to cart");
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header
-        cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
-      />
+      <Header cartCount={cartCount} />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-black to-gray-800 text-white">
@@ -69,11 +99,11 @@ export default function HomePage() {
             <p className="text-xl md:text-2xl mb-8 text-gray-300">
               Premium clothing for every occasion
             </p>
-            <Button asChild size="lg" variant="secondary">
-              <a href="/products" className="inline-flex items-center gap-2">
+            <Button size="lg" variant="secondary">
+              <Link href="/shop" className="inline-flex items-center gap-2">
                 Shop Now
                 <ArrowRight className="w-4 h-4" />
-              </a>
+              </Link>
             </Button>
           </div>
         </div>
