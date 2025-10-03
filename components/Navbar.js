@@ -36,7 +36,10 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    window.location.href = '/';
+    
+    // Navigate to dynamic base path
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+    window.location.href = basePath || '/';
   };
 
   return (

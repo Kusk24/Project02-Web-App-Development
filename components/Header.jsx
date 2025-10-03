@@ -48,7 +48,10 @@ export default function Header({ cartCount: initialCartCount = 0 }) {
   const handleLogout = () => {
     logout();
     setIsMenuOpen(false);
-    window.location.href = '/';
+    
+    // Navigate to dynamic base path
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+    window.location.href = basePath || '/';
   };
 
   if (loading) {

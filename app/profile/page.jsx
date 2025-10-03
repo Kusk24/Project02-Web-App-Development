@@ -22,7 +22,10 @@ export default function ProfilePage() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     document.cookie = "auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
-    router.push("/login");
+    
+    // Navigate to dynamic base path
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+    window.location.href = basePath || '/';
   };
 
   if (!user) return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-xl">Loading...</div></div>;

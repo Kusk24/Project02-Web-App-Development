@@ -118,6 +118,10 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('user');
       // Clear cookie properly
       document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
+      
+      // Navigate to dynamic base path
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+      window.location.href = basePath || '/';
     }
   };
 
