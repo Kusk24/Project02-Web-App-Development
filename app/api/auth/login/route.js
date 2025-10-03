@@ -3,6 +3,9 @@ import connectDB from '../../../../lib/mongodb';
 import User from '../../../../models/User';
 import jwt from 'jsonwebtoken';
 
+// Force Node.js runtime for JWT compatibility
+export const runtime = 'nodejs';
+
 export async function POST(request) {
   const basePath = process.env.NEXT_PUBLIC_API_URL || '';
   

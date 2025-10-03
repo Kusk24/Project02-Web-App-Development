@@ -3,6 +3,9 @@ import connectDB from '../../../lib/mongodb';
 import Sale from '../../../models/Sale';
 import jwt from 'jsonwebtoken';
 
+// Force Node.js runtime for JWT compatibility
+export const runtime = 'nodejs';
+
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 function verifyToken(request) {

@@ -8,7 +8,7 @@ const nextConfig = {
       afterFiles: [],
       fallback: []
     }
-  }
+  },
 }
 
 export default nextConfig;
