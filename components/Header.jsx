@@ -10,7 +10,6 @@ export default function Header({ cartCount: initialCartCount = 0 }) {
   const [cartCount, setCartCount] = useState(initialCartCount);
   const { user, logout, loading } = useAuth();
 
-  // Load cart data from localStorage
   useEffect(() => {
     const updateCartCount = () => {
       try {
@@ -37,7 +36,7 @@ export default function Header({ cartCount: initialCartCount = 0 }) {
   }, [initialCartCount]);
 
   const handleLogout = () => {
-    logout();       // ✅ AuthContext handles cookies + redirect
+    logout();
     setIsMenuOpen(false);
   };
 
@@ -77,8 +76,8 @@ export default function Header({ cartCount: initialCartCount = 0 }) {
             )}
           </nav>
 
-          {/* Right side */}
-          <div className="flex items-center space-x-3">
+          {/* Right side desktop */}
+          <div className="hidden md:flex items-center space-x-3">
             <Link href="/cart" className="relative p-2">
               <ShoppingCart className="w-6 h-6 text-gray-600" />
               {cartCount > 0 && (
@@ -87,9 +86,8 @@ export default function Header({ cartCount: initialCartCount = 0 }) {
                 </span>
               )}
             </Link>
-
             {user ? (
-              <div className="hidden md:flex items-center space-x-2">
+              <>
                 <Link href="/profile" className="flex items-center space-x-2 px-3 py-2 bg-gray-50 rounded-full">
                   <User className="w-4 h-4 text-gray-600" />
                   <span className="text-sm font-medium text-gray-700">{user.name}</span>
@@ -97,15 +95,67 @@ export default function Header({ cartCount: initialCartCount = 0 }) {
                 <button onClick={handleLogout} className="p-2 rounded-full hover:bg-gray-100">
                   <LogOut className="w-5 h-5 text-gray-600 hover:text-red-500" />
                 </button>
-              </div>
+              </>
             ) : (
-              <div className="hidden md:flex items-center space-x-2">
+              <>
                 <Link href="/login" className="px-4 py-2 text-gray-600">Login</Link>
                 <Link href="/register" className="px-4 py-2 bg-black text-white rounded-full">Sign Up</Link>
-              </div>
+              </>
             )}
           </div>
+
+          {/* Mobile menu button */}
+          <button
+            className="md:hidden p-2 rounded-full hover:bg-gray-100 transition text-gray-700"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Open menu"
+          >
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <div
+        className={`md:hidden bg-white shadow-lg border-t border-gray-100 transition-all duration-300 ${
+          isMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0 overflow-hidden"
+        }`}
+      >
+        <nav className="flex flex-col px-4 py-4 space-y-2">
+          <Link href="/" className="text-gray-700 py-2 px-2 rounded hover:bg-gray-100" onClick={() => setIsMenuOpen(false)}>Home</Link>
+          <Link href="/shop" className="text-gray-700 py-2 px-2 rounded hover:bg-gray-100" onClick={() => setIsMenuOpen(false)}>Shop</Link>
+          {user && (
+            <>
+              <Link href="/profile" className="text-gray-700 py-2 px-2 rounded hover:bg-gray-100" onClick={() => setIsMenuOpen(false)}>Profile</Link>
+              <Link href="/history" className="text-gray-700 py-2 px-2 rounded hover:bg-gray-100" onClick={() => setIsMenuOpen(false)}>Orders</Link>
+            </>
+          )}
+          <Link href="/cart" className="flex items-center py-2 px-2 rounded hover:bg-gray-100 text-gray-700" onClick={() => setIsMenuOpen(false)}>
+            <ShoppingCart className="w-5 h-5 mr-2 text-black" />
+            Cart
+            {cartCount > 0 && (
+              <span className="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            )}
+          </Link>
+          {user ? (
+            <>
+              <button
+                onClick={handleLogout}
+                className="flex items-center py-2 px-2 rounded hover:bg-gray-100 text-gray-700"
+              >
+                <LogOut className="w-5 h-5 mr-2 text-gray-600" />
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="py-2 px-2 rounded hover:bg-gray-100 text-gray-700" onClick={() => setIsMenuOpen(false)}>Login</Link>
+              <Link href="/register" className="py-2 px-2 bg-black text-white rounded-full text-center" onClick={() => setIsMenuOpen(false)}>Sign Up</Link>
+            </>
+          )}
+        </nav>
       </div>
     </header>
   );
