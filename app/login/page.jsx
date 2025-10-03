@@ -7,6 +7,7 @@ import Footer from "../../components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { useAuth } from "../../context/AuthContext";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const router = useRouter();
+  const { login } = useAuth();
 
   const validateForm = () => {
     const newErrors = {};
@@ -42,24 +44,13 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Store user data
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        document.cookie = `auth-token=${data.token}; path=/`;
+      const result = await login(email, password);
+      
+      if (result.success) {
+        alert("✅ Login successful!");
         router.push("/profile");
       } else {
-        const error = await response.json();
-        alert(error.message || "Invalid credentials");
+        alert(result.message || "Invalid credentials");
       }
     } catch (error) {
       console.error("Login error:", error);

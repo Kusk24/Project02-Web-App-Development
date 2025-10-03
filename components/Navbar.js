@@ -1,16 +1,42 @@
 'use client';
 
 import Link from 'next/link';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
 import { ShoppingCart, User, LogOut } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
-  const { getTotalItems } = useCart();
-  const { user, logout, isAuthenticated } = useAuth();
+  const [cartCount, setCartCount] = useState(0);
+  const { user, logout, loading } = useAuth();
+
+  useEffect(() => {
+    // Load cart count
+    const updateCartCount = () => {
+      try {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const count = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+        setCartCount(count);
+      } catch (error) {
+        console.error('Error loading cart:', error);
+        setCartCount(0);
+      }
+    };
+
+    updateCartCount();
+
+    // Listen for cart updates
+    window.addEventListener('cartUpdated', updateCartCount);
+    window.addEventListener('storage', updateCartCount);
+
+    return () => {
+      window.removeEventListener('cartUpdated', updateCartCount);
+      window.removeEventListener('storage', updateCartCount);
+    };
+  }, []);
 
   const handleLogout = () => {
     logout();
+    window.location.href = '/';
   };
 
   return (
@@ -40,19 +66,19 @@ export default function Navbar() {
             {/* Cart */}
             <Link href="/cart" className="relative p-2 text-gray-700 hover:text-gray-900 transition-colors">
               <ShoppingCart size={24} />
-              {getTotalItems() > 0 && (
+              {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {getTotalItems()}
+                  {cartCount}
                 </span>
               )}
             </Link>
 
             {/* Auth */}
-            {isAuthenticated ? (
+            {user ? (
               <div className="flex items-center space-x-2">
                 <Link href="/profile" className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors">
                   <User size={20} />
-                  <span className="hidden md:inline">{user?.name}</span>
+                  <span className="hidden md:inline">{user.name}</span>
                 </Link>
                 <button
                   onClick={handleLogout}

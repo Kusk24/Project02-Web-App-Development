@@ -5,6 +5,7 @@ import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Home() {
   const [clothes, setClothes] = useState([]);
@@ -12,16 +13,29 @@ export default function Home() {
 
   // Fetch products
   useEffect(() => {
-    fetch("/api/clothes")
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+
+    fetch(`${apiUrl}/api/clothes`)
       .then((res) => res.json())
-      .then(setClothes);
+      .then(setClothes)
+      .catch((error) => console.error("Error fetching clothes:", error));
   }, []);
 
   // Load cart from localStorage
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      setCartCount(JSON.parse(savedCart).length);
+    try {
+      const savedCart = localStorage.getItem("cart");
+      if (savedCart) {
+        const cart = JSON.parse(savedCart);
+        const count = cart.reduce(
+          (sum, item) => sum + (item.quantity || 1),
+          0
+        );
+        setCartCount(count);
+      }
+    } catch (error) {
+      console.error("Error loading cart:", error);
+      setCartCount(0);
     }
   }, []);
 
@@ -55,7 +69,8 @@ export default function Home() {
       localStorage.setItem("cart", JSON.stringify(cart));
 
       // Update cart count
-      setCartCount(cart.length);
+      const newCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+      setCartCount(newCount);
 
       // Dispatch custom event for header to update
       window.dispatchEvent(new Event("cartUpdated"));
@@ -84,11 +99,11 @@ export default function Home() {
             <p className="text-xl md:text-2xl mb-8 text-gray-300">
               Premium clothing for every occasion
             </p>
-            <Button asChild size="lg" variant="secondary">
-              <a href="/products" className="inline-flex items-center gap-2">
+            <Button size="lg" variant="secondary">
+              <Link href="/shop" className="inline-flex items-center gap-2">
                 Shop Now
                 <ArrowRight className="w-4 h-4" />
-              </a>
+              </Link>
             </Button>
           </div>
         </div>

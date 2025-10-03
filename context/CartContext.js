@@ -76,8 +76,14 @@ export const CartProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('cart', JSON.stringify(state.items));
+    if (typeof window !== 'undefined' && state.items.length >= 0) {
+      try {
+        localStorage.setItem('cart', JSON.stringify(state.items));
+        // Dispatch event for header updates
+        window.dispatchEvent(new Event('cartUpdated'));
+      } catch (error) {
+        console.error('Error saving cart to localStorage:', error);
+      }
     }
   }, [state.items]);
 
@@ -129,7 +135,17 @@ export const CartProvider = ({ children }) => {
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
+    // Return a fallback instead of throwing error
+    console.warn('useCart must be used within a CartProvider');
+    return {
+      items: [],
+      addToCart: () => {},
+      removeFromCart: () => {},
+      updateQuantity: () => {},
+      clearCart: () => {},
+      getTotalPrice: () => 0,
+      getTotalItems: () => 0
+    };
   }
   return context;
 };

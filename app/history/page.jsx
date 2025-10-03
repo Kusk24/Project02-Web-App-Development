@@ -12,13 +12,22 @@ export default function HistoryPage() {
   const [orders, setOrders] = useState([]);
   const [uploadingOrderId, setUploadingOrderId] = useState(null);
   const [proofFile, setProofFile] = useState(null);
+  const [user, setUser] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
+    // Check if user is logged in
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      router.push('/login');
+      return;
+    }
+    setUser(JSON.parse(storedUser));
+
     // Load orders from localStorage
     const savedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
     setOrders(savedOrders);
-  }, []);
+  }, [router]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -77,6 +86,12 @@ export default function HistoryPage() {
     if (!deadline) return false;
     return new Date(deadline) < new Date();
   };
+
+  if (!user) {
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-xl">Loading...</div>
+    </div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

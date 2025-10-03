@@ -132,6 +132,7 @@ export default function CartPage() {
 
   const handleSubmitOrder = async () => {
     setUploading(true);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
 
     try {
       const token = localStorage.getItem('token');
@@ -157,7 +158,7 @@ export default function CartPage() {
 
       console.log('Submitting order to database:', orderData);
 
-      const response = await fetch('/api/orders', {
+      const response = await fetch(`${apiUrl}/api/orders`, {
         method: 'POST',
         headers,
         body: JSON.stringify(orderData),

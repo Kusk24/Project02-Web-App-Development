@@ -8,6 +8,7 @@ import Footer from "../../components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { useAuth } from "../../context/AuthContext";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -21,6 +22,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const router = useRouter();
+  const { register } = useAuth();
 
   const validateForm = () => {
     const newErrors = {};
@@ -75,32 +77,19 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          phone: formData.phone,
-          address: formData.address,
-        }),
-      });
+      const result = await register(
+        formData.name,
+        formData.email,
+        formData.password,
+        formData.phone,
+        formData.address
+      );
 
-      if (response.ok) {
-        const data = await response.json();
-        // Store user data
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        document.cookie = `auth-token=${data.token}; path=/`;
-        
+      if (result.success) {
         alert("✅ Registration successful! Welcome to Style Store!");
         router.push("/profile");
       } else {
-        const error = await response.json();
-        alert(error.message || "Registration failed. Please try again.");
+        alert(result.message || "Registration failed. Please try again.");
       }
     } catch (error) {
       console.error("Registration error:", error);

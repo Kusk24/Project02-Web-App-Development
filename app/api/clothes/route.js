@@ -3,6 +3,8 @@ import connectDB from '../../../lib/mongodb';
 import Cloth from '../../../models/Cloth';
 
 export async function GET(request) {
+  const basePath = process.env.NEXT_PUBLIC_API_URL || '';
+  
   try {
     await connectDB();
     
@@ -22,18 +24,20 @@ export async function GET(request) {
     
     const clothes = await Cloth.find(query).sort({ createdAt: -1 });
     
-    return NextResponse.json(clothes);
+    return NextResponse.json(clothes.map(cloth => ({ ...cloth.toObject(), basePath: basePath })));
     
   } catch (error) {
     console.error('Clothes API error:', error);
     return NextResponse.json(
-      { message: 'Failed to fetch clothes' },
+      { message: 'Failed to fetch clothes', basePath: basePath },
       { status: 500 }
     );
   }
 }
 
 export async function POST(request) {
+  const basePath = process.env.NEXT_PUBLIC_API_URL || '';
+  
   try {
     await connectDB();
     
@@ -42,12 +46,12 @@ export async function POST(request) {
     const cloth = new Cloth(clothData);
     await cloth.save();
     
-    return NextResponse.json(cloth, { status: 201 });
+    return NextResponse.json({ ...cloth.toObject(), basePath: basePath }, { status: 201 });
     
   } catch (error) {
     console.error('Create cloth error:', error);
     return NextResponse.json(
-      { message: 'Failed to create cloth item' },
+      { message: 'Failed to create cloth item', basePath: basePath },
       { status: 500 }
     );
   }

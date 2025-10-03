@@ -20,8 +20,10 @@ export default function ShopPage() {
   }, [clothes, category, sortBy]);
 
   const fetchClothes = async () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+    
     try {
-      const response = await fetch("/api/clothes");
+      const response = await fetch(`${apiUrl}/api/clothes`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

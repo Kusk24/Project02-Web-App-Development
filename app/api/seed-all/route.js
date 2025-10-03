@@ -2,14 +2,15 @@ import connectDB from '../../../lib/mongodb';
 import User from '../../../models/User';
 import Cloth from '../../../models/Cloth';
 
-export async function GET(req) {
-  const basePath = process.env.NEXT_PUBLIC_API_URL || '';
-  
+export async function POST() {
   try {
+    console.log('Starting database seeding...');
     await connectDB();
     
     // Clear existing data
     await User.deleteMany({});
+    await Cloth.deleteMany({});
+    console.log('Cleared existing data');
     
     // Sample users data
     const sampleUsers = [
@@ -18,53 +19,23 @@ export async function GET(req) {
         email: 'john@example.com',
         password: 'password123',
         phone: '+1234567890',
-        address: '123 Main St, City, State',
-        joinDate: new Date()
+        address: '123 Main St, City, State'
       },
       {
         name: 'Jane Smith',
         email: 'jane@example.com',
         password: 'password123',
         phone: '+1987654321',
-        address: '456 Oak Ave, City, State',
-        joinDate: new Date()
+        address: '456 Oak Ave, City, State'
       },
       {
         name: 'Admin User',
         email: 'admin@example.com',
         password: 'admin123',
         phone: '+1555000000',
-        address: '789 Admin Blvd, City, State',
-        joinDate: new Date()
+        address: '789 Admin Blvd, City, State'
       }
     ];
-    
-    // Create users
-    const createdUsers = await User.create(sampleUsers);
-    
-    return Response.json({ 
-      message: 'Database seeded successfully',
-      usersCreated: createdUsers.length,
-      basePath: basePath
-    });
-    
-  } catch (error) {
-    console.error('Seed error:', error);
-    return Response.json({ 
-      error: 'Failed to seed database',
-      basePath: basePath
-    }, { status: 500 });
-  }
-}
-
-export async function POST() {
-  const basePath = process.env.NEXT_PUBLIC_API_URL || '';
-  
-  try {
-    await connectDB();
-    
-    // Clear existing data
-    await Cloth.deleteMany({});
     
     // Sample clothes data
     const sampleClothes = [
@@ -145,19 +116,29 @@ export async function POST() {
       }
     ];
     
-    // Insert sample data
-    const insertedClothes = await Cloth.insertMany(sampleClothes);
+    // Create users and clothes
+    const createdUsers = await User.create(sampleUsers);
+    const createdClothes = await Cloth.create(sampleClothes);
+    
+    console.log(`Created ${createdUsers.length} users and ${createdClothes.length} clothes`);
     
     return Response.json({ 
-      message: `Successfully seeded ${insertedClothes.length} clothes`,
-      data: insertedClothes,
-      basePath: basePath
+      success: true,
+      message: 'Database seeded successfully',
+      data: {
+        usersCreated: createdUsers.length,
+        clothesCreated: createdClothes.length,
+        users: createdUsers.map(u => ({ id: u._id, name: u.name, email: u.email })),
+        clothes: createdClothes.map(c => ({ id: c._id, name: c.name, category: c.category }))
+      }
     });
+    
   } catch (error) {
     console.error('Seeding error:', error);
     return Response.json({ 
-      error: 'Failed to seed database',
-      basePath: basePath
+      success: false,
+      error: error.message,
+      details: error.stack
     }, { status: 500 });
   }
 }

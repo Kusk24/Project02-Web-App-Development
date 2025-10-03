@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import connectDB from '../../../lib/mongodb';
+// Delete this entire file - it conflicts with separate /api/auth/login and /api/auth/register routes
+// Remove this entire file
 import User from '../../../models/User';
 import jwt from 'jsonwebtoken';
 

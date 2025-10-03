@@ -20,11 +20,13 @@ function verifyToken(request) {
 }
 
 export async function GET(request) {
+  const basePath = process.env.NEXT_PUBLIC_API_URL || '';
+  
   try {
     const decoded = verifyToken(request);
     if (!decoded) {
       return NextResponse.json(
-        { message: 'Unauthorized' },
+        { message: 'Unauthorized', basePath: basePath },
         { status: 401 }
       );
     }
@@ -35,23 +37,25 @@ export async function GET(request) {
       .populate('user', 'name email')
       .sort({ date: -1 });
     
-    return NextResponse.json(sales);
+    return NextResponse.json({ sales, basePath: basePath });
     
   } catch (error) {
     console.error('Sales API error:', error);
     return NextResponse.json(
-      { message: 'Failed to fetch sales' },
+      { message: 'Failed to fetch sales', basePath: basePath },
       { status: 500 }
     );
   }
 }
 
 export async function POST(request) {
+  const basePath = process.env.NEXT_PUBLIC_API_URL || '';
+  
   try {
     const decoded = verifyToken(request);
     if (!decoded) {
       return NextResponse.json(
-        { message: 'Unauthorized' },
+        { message: 'Unauthorized', basePath: basePath },
         { status: 401 }
       );
     }
@@ -64,12 +68,12 @@ export async function POST(request) {
     const sale = new Sale(saleData);
     await sale.save();
     
-    return NextResponse.json(sale, { status: 201 });
+    return NextResponse.json({ ...sale.toObject(), basePath: basePath }, { status: 201 });
     
   } catch (error) {
     console.error('Create sale error:', error);
     return NextResponse.json(
-      { message: 'Failed to create sale' },
+      { message: 'Failed to create sale', basePath: basePath },
       { status: 500 }
     );
   }

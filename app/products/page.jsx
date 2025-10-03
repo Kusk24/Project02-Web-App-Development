@@ -102,8 +102,10 @@ export default function ProductsPage() {
   // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+      
       try {
-        const response = await fetch("/api/clothes");
+        const response = await fetch(`${apiUrl}/api/clothes`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

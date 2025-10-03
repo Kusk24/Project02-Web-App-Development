@@ -18,10 +18,15 @@ export const AuthProvider = ({ children }) => {
         try {
           setToken(storedToken);
           setUser(JSON.parse(storedUser));
+          // Set cookie for middleware with proper formatting
+          const expires = new Date();
+          expires.setDate(expires.getDate() + 7);
+          document.cookie = `auth-token=${storedToken}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`;
         } catch (error) {
           console.error('Error parsing stored user data:', error);
           localStorage.removeItem('token');
           localStorage.removeItem('user');
+          document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
         }
       }
     }
@@ -30,8 +35,10 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+    
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${apiUrl}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,10 +57,14 @@ export const AuthProvider = ({ children }) => {
         if (typeof window !== 'undefined') {
           localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data.user));
+          // Set cookie with proper format and longer expiry
+          const expires = new Date();
+          expires.setDate(expires.getDate() + 7);
+          document.cookie = `auth-token=${data.token}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`;
         }
         return { success: true };
       } else {
-        return { success: false, message: data.error };
+        return { success: false, message: data.message };
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -61,9 +72,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (name, email, password) => {
+  const register = async (name, email, password, phone = '', address = '') => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+    
     try {
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch(`${apiUrl}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,6 +85,8 @@ export const AuthProvider = ({ children }) => {
           name,
           email,
           password,
+          phone,
+          address,
         }),
       });
 
@@ -83,10 +98,11 @@ export const AuthProvider = ({ children }) => {
         if (typeof window !== 'undefined') {
           localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data.user));
+          document.cookie = `auth-token=${data.token}; path=/; max-age=604800`; // 7 days
         }
         return { success: true };
       } else {
-        return { success: false, message: data.error };
+        return { success: false, message: data.message };
       }
     } catch (error) {
       console.error('Registration error:', error);
@@ -100,6 +116,8 @@ export const AuthProvider = ({ children }) => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      // Clear cookie properly
+      document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
     }
   };
 

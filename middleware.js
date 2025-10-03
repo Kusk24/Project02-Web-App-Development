@@ -5,53 +5,48 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 export function middleware(request) {
   const { pathname } = request.nextUrl;
+   
+  // Skip middleware for static files, API routes, and Next.js internals
+  if (
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/api/') ||
+    pathname.includes('.') ||
+    pathname === '/favicon.ico'
+  ) {
+    return NextResponse.next();
+  }
   
   // Get user session from cookies
-  const userSession = request.cookies.get('user-session');
+  const authToken = request.cookies.get('auth-token');
+  console.log('Middleware - Path:', pathname, 'Auth Token:', !!authToken?.value);
   
   // Protected routes that require authentication
   const protectedRoutes = ['/profile', '/checkout', '/history'];
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
   
-  // Public routes that should redirect to home if logged in
-  const authRoutes = ['/login', '/signup'];
+  // Auth routes - only redirect if user is actually authenticated
+  const authRoutes = ['/login', '/register'];
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
   
-  // Redirect to login if accessing protected route without session
-  if (isProtectedRoute && !userSession) {
+  // Only redirect to login if accessing protected route without valid token
+  if (isProtectedRoute && (!authToken || !authToken.value)) {
+    console.log('Redirecting to login - protected route without token');
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
   }
   
-  // Redirect to home if accessing auth routes while logged in
-  if (isAuthRoute && userSession) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-  
-  // Only protect API routes that need authentication
-  if (request.nextUrl.pathname.startsWith('/api/sales') ||
-      request.nextUrl.pathname.startsWith('/api/users')) {
-    
-    const authHeader = request.headers.get('authorization');
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-    
-    const token = authHeader.substring(7);
-    
+  // Only redirect away from auth routes if user has a valid token AND we can verify it
+  if (isAuthRoute && authToken?.value) {
     try {
-      jwt.verify(token, JWT_SECRET);
-      return NextResponse.next();
+      // Try to verify the token before redirecting
+      jwt.verify(authToken.value, JWT_SECRET);
+      console.log('Redirecting to home - valid token on auth route');
+      return NextResponse.redirect(new URL('/', request.url));
     } catch (error) {
-      return NextResponse.json(
-        { message: 'Invalid token' },
-        { status: 401 }
-      );
+      // Token is invalid, let them access the auth route
+      console.log('Invalid token, allowing access to auth route');
+      return NextResponse.next();
     }
   }
   
@@ -60,8 +55,6 @@ export function middleware(request) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*|_next).*)',
-    '/api/sales/:path*',
-    '/api/users/:path*'
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };

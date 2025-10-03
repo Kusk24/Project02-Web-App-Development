@@ -3,32 +3,33 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import { mockUsers } from "../data/mockData";
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
-    // Mock user fetch
-    setUser(mockUsers.user1);
-  }, []);
+    // Load user from localStorage
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      router.push('/login');
+      return;
+    }
+    setUser(JSON.parse(storedUser));
+  }, [router]);
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     document.cookie = "auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
     router.push("/login");
   };
-
-  const tabs = [
-    { id: "orders", label: "My Orders" },
-    { id: "settings", label: "Settings" },
-  ];
 
   if (!user) return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-xl">Loading...</div></div>;
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header cartCount={0} onCartClick={() => {}} />
+      <Header />
 
       {/* Profile Header */}
       <section className="bg-gradient-to-r from-black to-gray-800 text-white">
@@ -113,7 +114,7 @@ export default function ProfilePage() {
                     </label>
                     <div className="px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg">
                       <span className="text-lg text-gray-900">
-                        {new Date(user.joinDate).toLocaleDateString()}
+                        {new Date(user.joinDate || Date.now()).toLocaleDateString()}
                       </span>
                     </div>
                   </div>

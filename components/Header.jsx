@@ -3,40 +3,41 @@
 import { useState, useEffect } from "react";
 import { ShoppingCart, Menu, X, User, LogOut } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "../context/AuthContext";
 
 export default function Header({ cartCount: initialCartCount = 0 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(initialCartCount);
-  const [user, setUser] = useState(null);
-
+  const { user, logout, loading } = useAuth();
+  
+  // Load cart data from localStorage
   useEffect(() => {
-    // Load user from localStorage
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-      }
+    try {
+      // Load cart count from localStorage
+      const updateCartCount = () => {
+        try {
+          const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+          const count = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+          setCartCount(count);
+        } catch (error) {
+          console.error('Error loading cart:', error);
+          setCartCount(0);
+        }
+      };
+
+      updateCartCount();
+
+      // Listen for cart updates
+      window.addEventListener('cartUpdated', updateCartCount);
+      window.addEventListener('storage', updateCartCount);
+
+      return () => {
+        window.removeEventListener('cartUpdated', updateCartCount);
+        window.removeEventListener('storage', updateCartCount);
+      };
+    } catch (error) {
+      console.error('Error in Header useEffect:', error);
     }
-
-    // Load cart count from localStorage
-    const updateCartCount = () => {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      const count = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-      setCartCount(count);
-    };
-
-    updateCartCount();
-
-    // Listen for cart updates
-    window.addEventListener('cartUpdated', updateCartCount);
-    window.addEventListener('storage', updateCartCount);
-
-    return () => {
-      window.removeEventListener('cartUpdated', updateCartCount);
-      window.removeEventListener('storage', updateCartCount);
-    };
   }, []);
 
   // Update when prop changes
@@ -45,11 +46,23 @@ export default function Header({ cartCount: initialCartCount = 0 }) {
   }, [initialCartCount]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
+    logout();
+    setIsMenuOpen(false);
     window.location.href = '/';
   };
+
+  if (loading) {
+    return (
+      <header className="bg-white shadow-lg border-b border-gray-100 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <span className="text-2xl font-bold">Style Store</span>
+            <div>Loading...</div>
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="bg-white shadow-lg border-b border-gray-100 sticky top-0 z-50">
