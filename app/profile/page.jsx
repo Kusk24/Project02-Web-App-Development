@@ -3,32 +3,57 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import { useAuth } from "../../context/AuthContext";
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { logout } = useAuth();
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
   useEffect(() => {
-    // Load user from localStorage
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser) {
-      router.push('/login');
-      return;
-    }
-    setUser(JSON.parse(storedUser));
-  }, [router]);
+    const fetchProfile = async () => {
+      try {
+        // ✅ get session via cookie
+        const res = await fetch(`${apiUrl}/api/auth/session`, {
+          method: "GET",
+          credentials: "include", // ensures cookie is sent
+        });
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    document.cookie = "auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
-    
-    // Navigate to dynamic base path
-    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
-    window.location.href = basePath || '/';
-  };
+        if (!res.ok) {
+          router.push("/login");
+          return;
+        }
 
-  if (!user) return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-xl">Loading...</div></div>;
+        const data = await res.json();
+
+        if (data.authenticated && data.user) {
+          setUser(data.user);
+        } else {
+          router.push("/login");
+        }
+      } catch (err) {
+        console.error("Profile fetch error:", err);
+        router.push("/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [apiUrl, router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -52,7 +77,9 @@ export default function ProfilePage() {
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             {/* Profile Actions */}
             <div className="bg-white border-b px-6 py-4 flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-900">Account Information</h2>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Account Information
+              </h2>
               <div className="flex gap-4">
                 <button
                   onClick={() => router.push("/history")}
@@ -61,7 +88,7 @@ export default function ProfilePage() {
                   Order History
                 </button>
                 <button
-                  onClick={handleLogout}
+                  onClick={logout}
                   className="bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors"
                 >
                   Logout

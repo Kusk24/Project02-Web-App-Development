@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LogIn, Mail, Lock } from "lucide-react";
+import { LogIn } from "lucide-react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { Button } from "@/components/ui/button";
@@ -18,135 +18,72 @@ export default function LoginPage() {
   const { login } = useAuth();
 
   const validateForm = () => {
-    const newErrors = {};
-
-    if (!email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Email is invalid";
-    }
-
-    if (!password) {
-      newErrors.password = "Password is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    const errs = {};
+    if (!email.trim()) errs.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(email)) errs.email = "Email is invalid";
+    if (!password) errs.password = "Password is required";
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
+    if (!validateForm()) return;
     setLoading(true);
-
-    try {
-      const result = await login(email, password);
-      
-      if (result.success) {
-        alert("✅ Login successful!");
-        router.push("/profile");
-      } else {
-        alert(result.message || "Invalid credentials");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Network error. Please try again.");
-    } finally {
-      setLoading(false);
+    const result = await login(email, password);
+    if (result.success) {
+      router.push("/profile"); // ✅ no basePath here
+    } else {
+      alert(result.message || "Login failed");
     }
+    setLoading(false);
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header cartCount={0} />
-
-      {/* Login Section */}
       <section className="py-16">
-        <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle className="text-center flex items-center justify-center gap-2">
-                <LogIn className="w-6 h-6" />
-                Sign In
+              <CardTitle className="text-center flex items-center justify-center gap-2 text-black">
+                <LogIn className="w-6 h-6 text-black" /> Sign In
               </CardTitle>
-              <p className="text-center text-gray-600">
-                Welcome back! Please sign in to your account
-              </p>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Mail className="w-4 h-4 inline mr-2" />
-                    Email Address
-                  </label>
+                  <label className="text-black">Email</label>
                   <Input
+                    className="text-black"
                     type="email"
-                    required
-                    placeholder="Enter your email"
                     value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (errors.email)
-                        setErrors((prev) => ({ ...prev, email: "" }));
-                    }}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                   {errors.email && (
-                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                    <p className="text-red-600">{errors.email}</p>
                   )}
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Lock className="w-4 h-4 inline mr-2" />
-                    Password
-                  </label>
+                  <label className="text-black">Password</label>
                   <Input
+                    className="text-black"
                     type="password"
-                    required
-                    placeholder="Enter your password"
                     value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      if (errors.password)
-                        setErrors((prev) => ({ ...prev, password: "" }));
-                    }}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                   {errors.password && (
-                    <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                    <p className="text-red-600">{errors.password}</p>
                   )}
                 </div>
-
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full"
-                  size="lg"
-                >
+                <Button type="submit" disabled={loading} className="w-full">
                   {loading ? "Signing In..." : "Sign In"}
                 </Button>
               </form>
-
-              <div className="mt-6 text-center">
-                <p className="text-sm text-gray-600">
-                  Don't have an account?{" "}
-                  <a
-                    href="/register"
-                    className="font-medium text-indigo-600 hover:text-indigo-500"
-                  >
-                    Sign up
-                  </a>
-                </p>
-              </div>
             </CardContent>
           </Card>
         </div>
       </section>
-
       <Footer />
     </div>
   );
