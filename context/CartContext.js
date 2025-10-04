@@ -4,14 +4,20 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 
 const CartContext = createContext();
 
+// Helper function to normalize size value (undefined/null -> null)
+const normalizeSize = (size) => size || null;
+
+// Helper function to check if size should be considered in matching
+const shouldCheckSize = (payload) => normalizeSize(payload.size) !== null;
+
 // Helper function to check if two items match by id and size
 const itemsMatch = (item1, item2, checkSize = true) => {
   const idsMatch = item1.id === item2.id;
   if (!checkSize) return idsMatch;
   
-  // Normalize size values (undefined/null both become null for comparison)
-  const size1 = item1.size || null;
-  const size2 = item2.size || null;
+  // Normalize size values for comparison
+  const size1 = normalizeSize(item1.size);
+  const size2 = normalizeSize(item2.size);
   
   return idsMatch && size1 === size2;
 };
@@ -44,22 +50,20 @@ const cartReducer = (state, action) => {
       // Remove by id and optionally by size if provided
       return {
         ...state,
-        items: state.items.filter(item => {
-          const shouldCheckSize = (action.payload.size || null) !== null;
-          return !itemsMatch(item, action.payload, shouldCheckSize);
-        })
+        items: state.items.filter(item => 
+          !itemsMatch(item, action.payload, shouldCheckSize(action.payload))
+        )
       };
 
     case 'UPDATE_QUANTITY':
       // Update by id and optionally by size if provided
       return {
         ...state,
-        items: state.items.map(item => {
-          const shouldCheckSize = (action.payload.size || null) !== null;
-          return itemsMatch(item, action.payload, shouldCheckSize)
+        items: state.items.map(item =>
+          itemsMatch(item, action.payload, shouldCheckSize(action.payload))
             ? { ...item, quantity: action.payload.quantity }
-            : item;
-        })
+            : item
+        )
       };
 
     case 'CLEAR_CART':
