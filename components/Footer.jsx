@@ -17,7 +17,12 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--brown-soft)' }}>
               <Mail className="w-4 h-4" />
+              <div className="flex flex-col">
               <span>u6612054@au.edu</span>
+              <span>u6611982@au.edu</span>
+              <span>u6610607@au.edu</span>
+              <span>winyumg2003a@gmail.com</span>
+              </div>
             </div>
           </div>
 

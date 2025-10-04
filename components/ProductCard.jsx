@@ -1,10 +1,9 @@
 "use client";
 import { useState } from "react";
-import { Heart, ShoppingBag } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 
 export default function ProductCard({ product, onAddToCart }) {
   const [imageError, setImageError] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
 
   return (
     <div 
@@ -34,22 +33,6 @@ export default function ProductCard({ product, onAddToCart }) {
           </div>
         )}
 
-        {/* Like Button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsLiked(!isLiked);
-          }}
-          className="absolute top-3 right-3 p-2 rounded-full shadow-md transition-all hover:scale-110"
-          style={{ backgroundColor: 'white' }}
-        >
-          <Heart 
-            className="w-5 h-5 transition-all" 
-            style={{ color: isLiked ? 'var(--coral)' : 'var(--gray-light)' }}
-            fill={isLiked ? 'var(--coral)' : 'none'}
-          />
-        </button>
-
         {/* Sale Badge */}
         {product.sale && (
           <div 
@@ -73,7 +56,7 @@ export default function ProductCard({ product, onAddToCart }) {
               <span className="text-2xl font-bold" style={{ color: 'var(--brown-soft)' }}>
                 ${product.price}
               </span>
-              {product.originalPrice && (
+              {product.sale && product.originalPrice && (
                 <span className="text-sm line-through" style={{ color: 'var(--gray-light)' }}>
                   ${product.originalPrice}
                 </span>
@@ -90,7 +73,7 @@ export default function ProductCard({ product, onAddToCart }) {
 
           {/* Product Description */}
           {product.description && (
-            <p className="text-sm mb-3 line-clamp-2 min-h-[2.5rem]" style={{ color: 'var(--brown-soft)' }}>
+            <p className="text-sm mb-3" style={{ color: 'var(--brown-soft)', lineHeight: '1.5' }}>
               {product.description}
             </p>
           )}

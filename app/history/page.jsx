@@ -135,7 +135,7 @@ export default function HistoryPage() {
         <div className="max-w-6xl mx-auto px-4">
           {orders.length === 0 ? (
             <div className="rounded-3xl shadow-xl p-12 text-center" style={{ backgroundColor: 'white' }}>
-              <div className="text-6xl mb-4">�️</div>
+              <div className="text-6xl mb-4">💭</div>
               <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--brown-soft)' }}>
                 No orders found
               </h3>
