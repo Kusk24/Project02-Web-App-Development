@@ -7,15 +7,18 @@ const CartContext = createContext();
 const cartReducer = (state, action) => {
   switch (action.type) {
     case 'ADD_TO_CART':
+      // Compare by id and size (size can be undefined for items without size variants)
       const existingItem = state.items.find(
-        item => item.id === action.payload.id && item.size === action.payload.size
+        item => item.id === action.payload.id && 
+                (item.size || null) === (action.payload.size || null)
       );
       
       if (existingItem) {
         return {
           ...state,
           items: state.items.map(item =>
-            item.id === action.payload.id && item.size === action.payload.size
+            item.id === action.payload.id && 
+            (item.size || null) === (action.payload.size || null)
               ? { ...item, quantity: item.quantity + 1 }
               : item
           )
@@ -28,19 +31,32 @@ const cartReducer = (state, action) => {
       };
 
     case 'REMOVE_FROM_CART':
+      // Remove by id and optionally by size if provided
       return {
         ...state,
-        items: state.items.filter(item => item.id !== action.payload)
+        items: state.items.filter(item => {
+          if (action.payload.size !== undefined) {
+            return !(item.id === action.payload.id && 
+                    (item.size || null) === (action.payload.size || null));
+          }
+          return item.id !== action.payload.id;
+        })
       };
 
     case 'UPDATE_QUANTITY':
+      // Update by id and optionally by size if provided
       return {
         ...state,
-        items: state.items.map(item =>
-          item.id === action.payload.id
+        items: state.items.map(item => {
+          const matchesId = item.id === action.payload.id;
+          const matchesSize = action.payload.size !== undefined 
+            ? (item.size || null) === (action.payload.size || null)
+            : true;
+          
+          return matchesId && matchesSize
             ? { ...item, quantity: action.payload.quantity }
-            : item
-        )
+            : item;
+        })
       };
 
     case 'CLEAR_CART':
@@ -93,16 +109,16 @@ export const CartProvider = ({ children }) => {
     dispatch({ type: 'ADD_TO_CART', payload: item });
   };
 
-  const removeFromCart = (id) => {
-    dispatch({ type: 'REMOVE_FROM_CART', payload: id });
+  const removeFromCart = (id, size = undefined) => {
+    dispatch({ type: 'REMOVE_FROM_CART', payload: { id, size } });
   };
 
-  const updateQuantity = (id, quantity) => {
+  const updateQuantity = (id, quantity, size = undefined) => {
     if (quantity <= 0) {
-      removeFromCart(id);
+      removeFromCart(id, size);
       return;
     }
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
+    dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity, size } });
   };
 
   const clearCart = () => {

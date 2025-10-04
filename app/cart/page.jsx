@@ -43,15 +43,18 @@ export default function CartPage() {
     const item = cart[index];
     const newQuantity = (item.quantity || 1) + change;
     if (newQuantity <= 0) {
-      removeFromCart(item.id);
+      // Pass both id and size to properly identify the item
+      removeFromCart(item.id, item.size);
     } else {
-      updateCartQuantity(item.id, newQuantity);
+      // Pass id, quantity, and size to properly update the item
+      updateCartQuantity(item.id, newQuantity, item.size);
     }
   };
 
   const removeItem = (index) => {
     const item = cart[index];
-    removeFromCart(item.id);
+    // Pass both id and size to properly identify the item
+    removeFromCart(item.id, item.size);
   };
 
   const handleCheckoutClick = () => setShowCheckout(true);
