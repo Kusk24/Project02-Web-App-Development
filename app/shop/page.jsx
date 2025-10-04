@@ -101,57 +101,77 @@ export default function ShopPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--cream)' }}>
       <Header />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-12">
+      <section 
+        className="py-12 shadow-lg"
+        style={{ 
+          background: 'linear-gradient(135deg, var(--cloud-blue) 0%, var(--mint) 100%)'
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <div className="text-6xl mb-4 animate-float">🛍️✨</div>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: 'var(--brown-soft)' }}>
             Shop All Products
           </h1>
-          <p className="text-xl text-gray-300">
-            Browse our complete collection
+          <p className="text-xl" style={{ color: 'var(--brown-soft)' }}>
+            Browse our complete collection 💖
           </p>
         </div>
       </section>
 
       {/* Filters */}
-      <section className="bg-white border-b">
+      <section className="shadow-sm" style={{ backgroundColor: 'white' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex flex-col gap-4">
             {/* Category Filter */}
-            <div
-              className="flex items-center gap-2 overflow-x-auto pb-3 md:pb-0 custom-scrollbar"
-              style={{ WebkitOverflowScrolling: "touch" }}
-            >
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setCategory(cat)}
-                  className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
-                    category === cat
-                      ? "bg-black text-white"
-                      : "bg-gray-100 text-black hover:bg-gray-200"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+            <div>
+              <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--brown-soft)' }}>
+                Categories 🏷️
+              </h3>
+              <div className="flex flex-wrap items-center gap-2">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setCategory(cat)}
+                    className={`px-5 py-2 rounded-full whitespace-nowrap transition-all font-medium shadow-sm hover:scale-105 ${
+                      category === cat ? "shadow-md" : ""
+                    }`}
+                    style={
+                      category === cat
+                        ? { backgroundColor: 'var(--coral)', color: 'white' }
+                        : { backgroundColor: 'var(--cloud-blue-light)', color: 'var(--brown-soft)' }
+                    }
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Sort Filter */}
-            <div className="mt-2 md:mt-0">
+            <div>
+              <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--brown-soft)' }}>
+                Sort By ✨
+              </h3>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-black"
+                className="w-full md:w-auto px-5 py-3 rounded-full focus:outline-none focus:ring-2 font-medium shadow-sm cursor-pointer transition-all hover:shadow-md"
+                style={{ 
+                  border: '2px solid var(--cloud-blue)',
+                  color: 'var(--brown-soft)',
+                  backgroundColor: 'var(--cream-warm)',
+                  focusRing: 'var(--coral)'
+                }}
               >
-                <option value="newest">Newest First</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="name-asc">Name (A–Z)</option>
-                <option value="name-desc">Name (Z–A)</option>
+                <option value="newest">✨ Newest First</option>
+                <option value="price-low">💰 Price: Low to High</option>
+                <option value="price-high">💎 Price: High to Low</option>
+                <option value="name-asc">🔤 Name (A–Z)</option>
+                <option value="name-desc">🔤 Name (Z–A)</option>
               </select>
             </div>
           </div>
@@ -159,29 +179,35 @@ export default function ShopPage() {
       </section>
 
       {/* Products Grid */}
-      <section className="py-12">
+      <section className="py-12 flex-grow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {loading ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading products...</p>
+              <div className="text-6xl mb-4 animate-bounce-soft">⏳</div>
+              <p className="text-lg font-medium" style={{ color: 'var(--brown-soft)' }}>Loading products...</p>
             </div>
           ) : filteredClothes.length === 0 ? (
-            <div className="text-center py-12">
+            <div 
+              className="text-center py-16 rounded-3xl shadow-lg"
+              style={{ backgroundColor: 'white' }}
+            >
               <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--brown-soft)' }}>
                 No products found
               </h3>
-              <p className="text-gray-600">
-                Try adjusting your filters or check back later
+              <p style={{ color: 'var(--gray-light)' }}>
+                Try adjusting your filters or check back later ✨
               </p>
             </div>
           ) : (
             <>
               <div className="mb-6 text-center">
-                <p className="text-gray-600">
+                <p 
+                  className="text-lg font-medium px-6 py-2 rounded-full inline-block shadow-sm"
+                  style={{ backgroundColor: 'var(--lavender)', color: 'var(--brown-soft)' }}
+                >
                   Showing {filteredClothes.length} product
-                  {filteredClothes.length !== 1 ? "s" : ""}
+                  {filteredClothes.length !== 1 ? "s" : ""} 🎉
                 </p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -199,24 +225,6 @@ export default function ShopPage() {
       </section>
 
       <Footer />
-
-      {/* Custom scrollbar styles */}
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          height: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #1e293b; /* dark blue */
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f3f4f6; /* lighter gray */
-        }
-        .custom-scrollbar {
-          scrollbar-width: thin;
-          scrollbar-color: #1e293b #f3f4f6;
-        }
-      `}</style>
     </div>
   );
 }

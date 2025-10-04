@@ -133,122 +133,133 @@ export default function CartPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--cream)' }}>
       <Header />
 
       {/* Page Header */}
-      <section className="bg-gradient-to-r from-black to-gray-800 text-white">
+      <section 
+        className="shadow-lg"
+        style={{ 
+          background: 'linear-gradient(135deg, var(--coral) 0%, var(--lavender-pink) 100%)'
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4 flex items-center justify-center gap-3">
+            <div className="text-6xl mb-4 animate-float">🛒✨</div>
+            <h1 className="text-4xl font-bold mb-4 flex items-center justify-center gap-3" style={{ color: 'var(--brown-soft)' }}>
               <ShoppingBag className="w-8 h-8" />
               Shopping Cart
             </h1>
-            <p className="text-xl text-gray-300">
+            <p className="text-xl" style={{ color: 'var(--brown-soft)' }}>
               {showProofUpload
-                ? "Payment Proof Upload"
+                ? "Payment Proof Upload 💳"
                 : showCheckout
-                ? "Checkout Information"
-                : "Review your items"}
+                ? "Checkout Information 📝"
+                : "Review your items 💖"}
             </p>
           </div>
         </div>
       </section>
 
       {/* Cart Content */}
-      <section className="py-16">
+      <section className="py-16 flex-grow">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Cart Items View */}
           {!showCheckout && !showProofUpload && (
-            <Card>
-              <CardContent className="p-6">
+            <Card className="shadow-xl rounded-3xl border-0">
+              <CardContent className="p-6" style={{ backgroundColor: 'white' }}>
                 {cart.length === 0 ? (
                   // ✅ Empty Cart Message
                   <div className="text-center py-12">
-                    <div className="text-6xl mb-4">🛒</div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <div className="text-6xl mb-4">�️</div>
+                    <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--brown-soft)' }}>
                       Your cart is empty
                     </h3>
-                    <p className="text-gray-600 mb-6">
-                      Looks like you haven't added anything yet.
+                    <p className="mb-6" style={{ color: 'var(--gray-light)' }}>
+                      Looks like you haven't added anything yet. ✨
                     </p>
-                    <Button onClick={() => router.push("/shop")}>
-                      Start Shopping
-                    </Button>
+                    <button
+                      onClick={() => router.push("/shop")}
+                      className="px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all hover:scale-105 text-white"
+                      style={{ backgroundColor: 'var(--coral)' }}
+                    >
+                      Start Shopping 🛒
+                    </button>
                   </div>
                 ) : (
                   // ✅ Normal Cart Flow
                   <>
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                       {cart.map((item, index) => (
                         <div
                           key={`${item.id}-${item.size}-${index}`}
-                          className="flex items-center justify-between p-6 bg-gray-50 rounded-lg"
+                          className="flex items-center justify-between p-6 rounded-3xl shadow-sm"
+                          style={{ backgroundColor: 'var(--cream-warm)' }}
                         >
                           <div className="flex items-center space-x-6">
                             <img
                               src={
-                                item.image || "https://via.placeholder.com/80"
+                                item.image || "https://via.placeholder.com/80/BCE2F5/5A4A43"
                               }
                               alt={item.name}
-                              className="w-20 h-20 object-cover rounded-lg"
+                              className="w-20 h-20 object-cover rounded-2xl shadow-md"
                             />
                             <div>
-                              <h4 className="text-xl font-semibold text-gray-900">
+                              <h4 className="text-xl font-bold" style={{ color: 'var(--brown-soft)' }}>
                                 {item.name}
                               </h4>
-                              <p className="text-gray-600">Size: {item.size}</p>
-                              <p className="text-lg font-bold text-black">
+                              <p className="text-sm" style={{ color: 'var(--gray-light)' }}>Size: {item.size}</p>
+                              <p className="text-lg font-bold mt-1" style={{ color: 'var(--coral)' }}>
                                 ${item.price}
                               </p>
                             </div>
                           </div>
 
                           <div className="flex items-center space-x-4">
-                            <div className="flex items-center space-x-2">
-                              <Button
-                                variant="outline"
-                                size="icon"
+                            <div className="flex items-center space-x-2 px-3 py-2 rounded-full shadow-sm" style={{ backgroundColor: 'white' }}>
+                              <button
+                                className="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 disabled:opacity-30"
+                                style={{ backgroundColor: 'var(--lavender)' }}
                                 onClick={() => updateQuantity(index, -1)}
                                 disabled={item.quantity <= 1}
                               >
-                                <Minus className="w-4 h-4 text-black" />
-                              </Button>
-                              <span className="w-12 text-center font-semibold text-lg text-black">
+                                <Minus className="w-4 h-4" style={{ color: 'var(--brown-soft)' }} />
+                              </button>
+                              <span className="w-12 text-center font-bold text-lg" style={{ color: 'var(--brown-soft)' }}>
                                 {item.quantity || 1}
                               </span>
-                              <Button
-                                variant="outline"
-                                size="icon"
+                              <button
+                                className="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110"
+                                style={{ backgroundColor: 'var(--mint-vibrant)' }}
                                 onClick={() => updateQuantity(index, 1)}
                               >
-                                <Plus className="w-4 h-4 text-black" />
-                              </Button>
+                                <Plus className="w-4 h-4" style={{ color: 'white' }} />
+                              </button>
                             </div>
-                            <Button
-                              variant="destructive"
-                              size="icon"
+                            <button
+                              className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-md"
+                              style={{ backgroundColor: '#EF4444' }}
                               onClick={() => removeItem(index)}
                             >
-                              <X className="w-4 h-4" />
-                            </Button>
+                              <X className="w-5 h-5 text-white" />
+                            </button>
                           </div>
                         </div>
                       ))}
                     </div>
 
-                    <div className="border-t mt-8 pt-6">
-                      <div className="flex justify-between items-center text-2xl font-bold mb-6 text-black">
+                    <div className="border-t-2 mt-8 pt-6" style={{ borderColor: 'var(--cloud-blue)' }}>
+                      <div className="flex justify-between items-center text-3xl font-bold mb-6 px-2" style={{ color: 'var(--brown-soft)' }}>
                         <span>Total:</span>
-                        <span>${total.toFixed(2)}</span>
+                        <span style={{ color: 'var(--coral)' }}>${total.toFixed(2)}</span>
                       </div>
-                      <Button
+                      <button
                         onClick={handleCheckoutClick}
-                        className="w-full"
-                        size="lg"
+                        className="w-full py-4 rounded-full font-bold text-white shadow-lg hover:shadow-xl transition-all hover:scale-105 text-lg"
+                        style={{ backgroundColor: 'var(--coral)' }}
                       >
-                        Proceed to Checkout
-                      </Button>
+                        Proceed to Checkout 💳
+                      </button>
                     </div>
                   </>
                 )}
@@ -258,17 +269,17 @@ export default function CartPage() {
 
           {/* Checkout Form */}
           {showCheckout && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-black">
-                  Checkout Information
+            <Card className="shadow-xl rounded-3xl border-0">
+              <CardHeader style={{ backgroundColor: 'var(--cloud-blue-light)' }}>
+                <CardTitle style={{ color: 'var(--brown-soft)' }}>
+                  📝 Checkout Information
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <form onSubmit={handleUserSubmit} className="space-y-6">
+              <CardContent className="p-6" style={{ backgroundColor: 'white' }}>
+                <form onSubmit={handleUserSubmit} className="space-y-5">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name
+                    <label className="block text-sm font-bold mb-2 flex items-center gap-2" style={{ color: 'var(--brown-soft)' }}>
+                      <span>👤</span> Full Name
                     </label>
                     <Input
                       type="text"
@@ -277,12 +288,17 @@ export default function CartPage() {
                       onChange={(e) =>
                         setUserInfo({ ...userInfo, name: e.target.value })
                       }
-                      className="text-black" // ✅ force text color
+                      className="rounded-full border-2"
+                      style={{ 
+                        borderColor: 'var(--cloud-blue)', 
+                        color: 'var(--brown-soft)',
+                        backgroundColor: 'var(--cream-warm)'
+                      }}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address
+                    <label className="block text-sm font-bold mb-2 flex items-center gap-2" style={{ color: 'var(--brown-soft)' }}>
+                      <span>📧</span> Email Address
                     </label>
                     <Input
                       type="email"
@@ -291,12 +307,17 @@ export default function CartPage() {
                       onChange={(e) =>
                         setUserInfo({ ...userInfo, email: e.target.value })
                       }
-                      className="text-black" // ✅ force text color
+                      className="rounded-full border-2"
+                      style={{ 
+                        borderColor: 'var(--cloud-blue)', 
+                        color: 'var(--brown-soft)',
+                        backgroundColor: 'var(--cream-warm)'
+                      }}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number
+                    <label className="block text-sm font-bold mb-2 flex items-center gap-2" style={{ color: 'var(--brown-soft)' }}>
+                      <span>📱</span> Phone Number
                     </label>
                     <Input
                       type="tel"
@@ -305,16 +326,26 @@ export default function CartPage() {
                       onChange={(e) =>
                         setUserInfo({ ...userInfo, phone: e.target.value })
                       }
-                      className="text-black" // ✅ force text color
+                      className="rounded-full border-2"
+                      style={{ 
+                        borderColor: 'var(--cloud-blue)', 
+                        color: 'var(--brown-soft)',
+                        backgroundColor: 'var(--cream-warm)'
+                      }}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Shipping Address
+                    <label className="block text-sm font-bold mb-2 flex items-center gap-2" style={{ color: 'var(--brown-soft)' }}>
+                      <span>🏠</span> Shipping Address
                     </label>
                     <textarea
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-black" // ✅ added text-black
+                      className="w-full px-4 py-3 border-2 rounded-3xl focus:outline-none focus:ring-2 transition-all"
+                      style={{ 
+                        borderColor: 'var(--cloud-blue)', 
+                        color: 'var(--brown-soft)',
+                        backgroundColor: 'var(--cream-warm)'
+                      }}
                       rows="4"
                       value={userInfo.address}
                       onChange={(e) =>
@@ -323,23 +354,30 @@ export default function CartPage() {
                     ></textarea>
                   </div>
 
-                  <div className="border-t pt-6">
-                    <div className="flex justify-between items-center text-2xl font-bold mb-6 text-black">
+                  <div className="border-t-2 pt-6" style={{ borderColor: 'var(--cloud-blue)' }}>
+                    <div className="flex justify-between items-center text-2xl font-bold mb-6" style={{ color: 'var(--brown-soft)' }}>
                       <span>Total:</span>
-                      <span>${total.toFixed(2)}</span>
+                      <span style={{ color: 'var(--coral)' }}>${total.toFixed(2)}</span>
                     </div>
-                    <div className="flex gap-4">
-                      <Button
+                    <div className="flex gap-3">
+                      <button
                         type="button"
-                        variant="outline"
                         onClick={() => setShowCheckout(false)}
-                        className="flex-1 text-black border-gray-300 hover:bg-gray-50"
+                        className="flex-1 py-3 rounded-full font-bold shadow-md transition-all hover:scale-105"
+                        style={{ 
+                          backgroundColor: 'var(--lavender)', 
+                          color: 'var(--brown-soft)' 
+                        }}
                       >
-                        Back to Cart
-                      </Button>
-                      <Button type="submit" className="flex-1" size="lg">
-                        Continue to Payment
-                      </Button>
+                        ← Back to Cart
+                      </button>
+                      <button 
+                        type="submit"
+                        className="flex-1 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all hover:scale-105 text-white"
+                        style={{ backgroundColor: 'var(--mint-vibrant)' }}
+                      >
+                        Continue to Payment →
+                      </button>
                     </div>
                   </div>
                 </form>

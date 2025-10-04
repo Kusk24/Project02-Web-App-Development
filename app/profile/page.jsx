@@ -47,8 +47,11 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--cream)' }}>
+        <div className="text-center">
+          <div className="text-6xl mb-4 animate-bounce-soft">⏳</div>
+          <div className="text-xl font-bold" style={{ color: 'var(--brown-soft)' }}>Loading...</div>
+        </div>
       </div>
     );
   }
@@ -56,42 +59,50 @@ export default function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--cream)' }}>
       <Header />
 
       {/* Profile Header */}
-      <section className="bg-gradient-to-r from-black to-gray-800 text-white">
+      <section 
+        className="shadow-lg"
+        style={{ 
+          background: 'linear-gradient(135deg, var(--lavender) 0%, var(--cloud-blue) 100%)'
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4">My Profile</h1>
-            <p className="text-xl text-gray-300">
-              Manage your account information
+            <div className="text-6xl mb-4 animate-float">👤✨</div>
+            <h1 className="text-4xl font-bold mb-4" style={{ color: 'var(--brown-soft)' }}>My Profile</h1>
+            <p className="text-xl" style={{ color: 'var(--brown-soft)' }}>
+              Manage your account information 💖
             </p>
           </div>
         </div>
       </section>
 
       {/* Profile Content */}
-      <section className="py-16">
+      <section className="py-16 flex-grow">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="rounded-3xl shadow-xl overflow-hidden" style={{ backgroundColor: 'white' }}>
             {/* Profile Actions */}
-            <div className="bg-white border-b px-6 py-4 flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-900">
+            <div className="px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4" style={{ backgroundColor: 'var(--cloud-blue-light)' }}>
+              <h2 className="text-2xl font-bold" style={{ color: 'var(--brown-soft)' }}>
                 Account Information
               </h2>
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 <button
                   onClick={() => router.push("/history")}
-                  className="bg-gray-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+                  className="px-6 py-2 rounded-full font-bold transition-all hover:scale-105 shadow-md text-white"
+                  style={{ backgroundColor: 'var(--mint-vibrant)' }}
                 >
-                  Order History
+                  📦 Order History
                 </button>
                 <button
                   onClick={logout}
-                  className="bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+                  className="px-6 py-2 rounded-full font-bold transition-all hover:scale-105 shadow-md text-white"
+                  style={{ backgroundColor: '#EF4444' }}
                 >
-                  Logout
+                  🚪 Logout
                 </button>
               </div>
             </div>
@@ -101,59 +112,61 @@ export default function ProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name
+                    <label className="block text-sm font-bold mb-2 flex items-center gap-2" style={{ color: 'var(--brown-soft)' }}>
+                      <span>👤</span> Full Name
                     </label>
-                    <div className="px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg">
-                      <span className="text-lg text-gray-900">{user.name}</span>
+                    <div className="px-4 py-3 rounded-2xl shadow-sm" style={{ backgroundColor: 'var(--cream-warm)', borderLeft: '4px solid var(--coral)' }}>
+                      <span className="text-lg font-medium" style={{ color: 'var(--brown-soft)' }}>{user.name}</span>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address
+                    <label className="block text-sm font-bold mb-2 flex items-center gap-2" style={{ color: 'var(--brown-soft)' }}>
+                      <span>📧</span> Email Address
                     </label>
-                    <div className="px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg">
-                      <span className="text-lg text-gray-900">{user.email}</span>
+                    <div className="px-4 py-3 rounded-2xl shadow-sm" style={{ backgroundColor: 'var(--cream-warm)', borderLeft: '4px solid var(--mint-vibrant)' }}>
+                      <span className="text-lg font-medium" style={{ color: 'var(--brown-soft)' }}>{user.email}</span>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number
+                    <label className="block text-sm font-bold mb-2 flex items-center gap-2" style={{ color: 'var(--brown-soft)' }}>
+                      <span>📱</span> Phone Number
                     </label>
-                    <div className="px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg">
-                      <span className="text-lg text-gray-900">{user.phone}</span>
+                    <div className="px-4 py-3 rounded-2xl shadow-sm" style={{ backgroundColor: 'var(--cream-warm)', borderLeft: '4px solid var(--lavender)' }}>
+                      <span className="text-lg font-medium" style={{ color: 'var(--brown-soft)' }}>{user.phone}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Address
+                    <label className="block text-sm font-bold mb-2 flex items-center gap-2" style={{ color: 'var(--brown-soft)' }}>
+                      <span>🏠</span> Address
                     </label>
-                    <div className="px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg">
-                      <span className="text-lg text-gray-900">{user.address}</span>
+                    <div className="px-4 py-3 rounded-2xl shadow-sm" style={{ backgroundColor: 'var(--cream-warm)', borderLeft: '4px solid var(--cloud-blue)' }}>
+                      <span className="text-lg font-medium" style={{ color: 'var(--brown-soft)' }}>{user.address}</span>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Member Since
+                    <label className="block text-sm font-bold mb-2 flex items-center gap-2" style={{ color: 'var(--brown-soft)' }}>
+                      <span>📅</span> Member Since
                     </label>
-                    <div className="px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg">
-                      <span className="text-lg text-gray-900">
+                    <div className="px-4 py-3 rounded-2xl shadow-sm" style={{ backgroundColor: 'var(--cream-warm)', borderLeft: '4px solid var(--lavender-pink)' }}>
+                      <span className="text-lg font-medium" style={{ color: 'var(--brown-soft)' }}>
                         {new Date(user.joinDate || Date.now()).toLocaleDateString()}
                       </span>
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-r from-black to-gray-800 text-white p-6 rounded-lg">
-                    <h3 className="text-lg font-semibold mb-2">Account Status</h3>
-                    <p className="text-gray-300">Active Member</p>
-                    <p className="text-sm text-gray-400 mt-2">
-                      Enjoy free shipping and exclusive offers!
+                  <div className="p-6 rounded-2xl shadow-lg" style={{ background: 'linear-gradient(135deg, var(--coral) 0%, var(--lavender-pink) 100%)' }}>
+                    <h3 className="text-lg font-bold mb-2 flex items-center gap-2 text-white">
+                      <span>⭐</span> Account Status
+                    </h3>
+                    <p className="text-white font-medium">Active Member</p>
+                    <p className="text-sm text-white mt-2 opacity-90">
+                      Enjoy free shipping and exclusive offers! 🎁
                     </p>
                   </div>
                 </div>
