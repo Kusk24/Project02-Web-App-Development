@@ -79,9 +79,27 @@ export default function LoginPage() {
                 <Button type="submit" disabled={loading} className="w-full">
                   {loading ? "Signing In..." : "Sign In"}
                 </Button>
+                <div className="text-center text-sm text-gray-600 mt-4">
+                  Don't have an account?{" "}
+                  <button
+                    type="button"
+                    onClick={() => router.push("/register")}
+                    className="text-black font-semibold hover:underline"
+                  >
+                    Sign Up
+                  </button>
+                </div>
               </form>
             </CardContent>
           </Card>
+          <div className="text-center mt-4">
+            <button
+              onClick={() => router.back()}
+              className="text-gray-600 hover:text-black transition-colors"
+            >
+              ← Back to previous page
+            </button>
+          </div>
         </div>
       </section>
       <Footer />

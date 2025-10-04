@@ -100,9 +100,27 @@ export default function RegisterPage() {
                 <Button type="submit" disabled={loading} className="w-full">
                   {loading ? "Creating..." : "Register"}
                 </Button>
+                <div className="text-center text-sm text-gray-600 mt-4">
+                  Already have an account?{" "}
+                  <button
+                    type="button"
+                    onClick={() => router.push("/login")}
+                    className="text-black font-semibold hover:underline"
+                  >
+                    Sign In
+                  </button>
+                </div>
               </form>
             </CardContent>
           </Card>
+          <div className="text-center mt-4">
+            <button
+              onClick={() => router.back()}
+              className="text-gray-600 hover:text-black transition-colors"
+            >
+              ← Back to previous page
+            </button>
+          </div>
         </div>
       </section>
       <Footer />

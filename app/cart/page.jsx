@@ -328,9 +328,19 @@ export default function CartPage() {
                       <span>Total:</span>
                       <span>${total.toFixed(2)}</span>
                     </div>
-                    <Button type="submit" className="w-full" size="lg">
-                      Continue to Payment
-                    </Button>
+                    <div className="flex gap-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowCheckout(false)}
+                        className="flex-1"
+                      >
+                        Back to Cart
+                      </Button>
+                      <Button type="submit" className="flex-1" size="lg">
+                        Continue to Payment
+                      </Button>
+                    </div>
                   </div>
                 </form>
               </CardContent>
@@ -422,6 +432,19 @@ export default function CartPage() {
                     </div>
                   </div>
                 </div>
+
+                <div className="mt-6">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowProofUpload(false);
+                      setShowCheckout(true);
+                    }}
+                    className="w-full"
+                  >
+                    ← Back to Checkout
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}
@@ -463,7 +486,7 @@ export default function CartPage() {
                       onClick={() => setUploadChoice(null)}
                       className="flex-1 text-black"
                     >
-                      Back
+                      Back to Payment Options
                     </Button>
                     <Button
                       onClick={handleSubmitOrder}
@@ -519,7 +542,7 @@ export default function CartPage() {
                       onClick={() => setUploadChoice(null)}
                       className="flex-1 text-black"
                     >
-                      Back
+                      Back to Payment Options
                     </Button>
                     <Button
                       onClick={handleSubmitOrder}
