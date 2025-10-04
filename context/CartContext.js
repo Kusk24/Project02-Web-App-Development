@@ -4,21 +4,31 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 
 const CartContext = createContext();
 
+// Helper function to check if two items match by id and size
+const itemsMatch = (item1, item2, checkSize = true) => {
+  const idsMatch = item1.id === item2.id;
+  if (!checkSize) return idsMatch;
+  
+  // Normalize size values (undefined/null both become null for comparison)
+  const size1 = item1.size || null;
+  const size2 = item2.size || null;
+  
+  return idsMatch && size1 === size2;
+};
+
 const cartReducer = (state, action) => {
   switch (action.type) {
     case 'ADD_TO_CART':
       // Compare by id and size (size can be undefined for items without size variants)
-      const existingItem = state.items.find(
-        item => item.id === action.payload.id && 
-                (item.size || null) === (action.payload.size || null)
+      const existingItem = state.items.find(item => 
+        itemsMatch(item, action.payload)
       );
       
       if (existingItem) {
         return {
           ...state,
           items: state.items.map(item =>
-            item.id === action.payload.id && 
-            (item.size || null) === (action.payload.size || null)
+            itemsMatch(item, action.payload)
               ? { ...item, quantity: item.quantity + 1 }
               : item
           )
@@ -35,11 +45,8 @@ const cartReducer = (state, action) => {
       return {
         ...state,
         items: state.items.filter(item => {
-          if (action.payload.size !== undefined) {
-            return !(item.id === action.payload.id && 
-                    (item.size || null) === (action.payload.size || null));
-          }
-          return item.id !== action.payload.id;
+          const shouldCheckSize = (action.payload.size || null) !== null;
+          return !itemsMatch(item, action.payload, shouldCheckSize);
         })
       };
 
@@ -48,12 +55,8 @@ const cartReducer = (state, action) => {
       return {
         ...state,
         items: state.items.map(item => {
-          const matchesId = item.id === action.payload.id;
-          const matchesSize = action.payload.size !== undefined 
-            ? (item.size || null) === (action.payload.size || null)
-            : true;
-          
-          return matchesId && matchesSize
+          const shouldCheckSize = (action.payload.size || null) !== null;
+          return itemsMatch(item, action.payload, shouldCheckSize)
             ? { ...item, quantity: action.payload.quantity }
             : item;
         })
