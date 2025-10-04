@@ -333,7 +333,7 @@ export default function CartPage() {
                         type="button"
                         variant="outline"
                         onClick={() => setShowCheckout(false)}
-                        className="flex-1"
+                        className="flex-1 text-black border-gray-300 hover:bg-gray-50"
                       >
                         Back to Cart
                       </Button>
@@ -440,7 +440,7 @@ export default function CartPage() {
                       setShowProofUpload(false);
                       setShowCheckout(true);
                     }}
-                    className="w-full"
+                    className="w-full text-black border-gray-300 hover:bg-gray-50"
                   >
                     ← Back to Checkout
                   </Button>
@@ -484,7 +484,7 @@ export default function CartPage() {
                     <Button
                       variant="outline"
                       onClick={() => setUploadChoice(null)}
-                      className="flex-1 text-black"
+                      className="flex-1 text-black border-gray-300 hover:bg-gray-50"
                     >
                       Back to Payment Options
                     </Button>
@@ -540,7 +540,7 @@ export default function CartPage() {
                     <Button
                       variant="outline"
                       onClick={() => setUploadChoice(null)}
-                      className="flex-1 text-black"
+                      className="flex-1 text-black border-gray-300 hover:bg-gray-50"
                     >
                       Back to Payment Options
                     </Button>
