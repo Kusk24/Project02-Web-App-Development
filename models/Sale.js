@@ -21,7 +21,7 @@ const saleSchema = new mongoose.Schema({
     default: 'unpaid'
   },
   items: [{
-    id: Number,
+    id: String, // Accept MongoDB ObjectId strings
     name: String,
     price: Number,
     quantity: {
@@ -52,6 +52,11 @@ const saleSchema = new mongoose.Schema({
   }
 });
 
-const Sale = mongoose.models.Sale || mongoose.model("Sale", saleSchema);
+// Delete the cached model to force reload with new schema
+if (mongoose.models.Sale) {
+  delete mongoose.models.Sale;
+}
+
+const Sale = mongoose.model("Sale", saleSchema);
 
 export default Sale;
