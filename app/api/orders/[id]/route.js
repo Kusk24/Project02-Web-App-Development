@@ -5,7 +5,8 @@ import Sale from '../../../../models/Sale';
 export async function GET(req, { params }) {
   try {
     await connectDB();
-    const order = await Sale.findById(params.id);
+    const { id } = await params; // ✅ await params
+    const order = await Sale.findById(id);
 
     if (!order) {
       return Response.json({ error: 'Order not found' }, { status: 404 });
@@ -22,10 +23,11 @@ export async function GET(req, { params }) {
 export async function PUT(req, { params }) {
   try {
     await connectDB();
+    const { id } = await params; // ✅ await params
     const body = await req.json();
 
     const order = await Sale.findByIdAndUpdate(
-      params.id,
+      id,
       { ...body, updatedAt: new Date() },
       { new: true }
     );
@@ -45,7 +47,7 @@ export async function PUT(req, { params }) {
 export async function PATCH(req, { params }) {
   try {
     await connectDB();
-    const { id } = params;
+    const { id } = await params; // ✅ await params
     const body = await req.json();
 
     const updateFields = {};
@@ -77,7 +79,7 @@ export async function PATCH(req, { params }) {
 export async function DELETE(req, { params }) {
   try {
     await connectDB();
-    const { id } = params;
+    const { id } = await params; // ✅ await params
 
     const deletedOrder = await Sale.findByIdAndDelete(id);
 
