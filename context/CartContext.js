@@ -4,16 +4,36 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 
 const CartContext = createContext();
 
+// Helper function to normalize size value (undefined/null -> null)
+const normalizeSize = (size) => (size === undefined || size === null ? null : size);
+// Helper function to check if size should be considered in matching
+const shouldCheckSize = (payload) => normalizeSize(payload.size) !== null;
+
+// Helper function to check if two items match by id and size
+const itemsMatch = (item1, item2, checkSize = true) => {
+  const idsMatch = item1.id === item2.id;
+  if (!checkSize) return idsMatch;
+  
+  // Normalize size values for comparison
+  const size1 = normalizeSize(item1.size);
+  const size2 = normalizeSize(item2.size);
+  
+  return idsMatch && size1 === size2;
+};
+
 const cartReducer = (state, action) => {
   switch (action.type) {
     case 'ADD_TO_CART':
-      const existingItem = state.items.find(item => item.id === action.payload.id);
+      // Compare by id and size (size can be undefined for items without size variants)
+      const existingItem = state.items.find(item => 
+        itemsMatch(item, action.payload)
+      );
       
       if (existingItem) {
         return {
           ...state,
           items: state.items.map(item =>
-            item.id === action.payload.id
+            itemsMatch(item, action.payload)
               ? { ...item, quantity: item.quantity + 1 }
               : item
           )
@@ -26,16 +46,20 @@ const cartReducer = (state, action) => {
       };
 
     case 'REMOVE_FROM_CART':
+      // Remove by id and optionally by size if provided
       return {
         ...state,
-        items: state.items.filter(item => item.id !== action.payload)
+        items: state.items.filter(item => 
+          !itemsMatch(item, action.payload, shouldCheckSize(action.payload))
+        )
       };
 
     case 'UPDATE_QUANTITY':
+      // Update by id and optionally by size if provided
       return {
         ...state,
         items: state.items.map(item =>
-          item.id === action.payload.id
+          itemsMatch(item, action.payload, shouldCheckSize(action.payload))
             ? { ...item, quantity: action.payload.quantity }
             : item
         )
@@ -91,16 +115,16 @@ export const CartProvider = ({ children }) => {
     dispatch({ type: 'ADD_TO_CART', payload: item });
   };
 
-  const removeFromCart = (id) => {
-    dispatch({ type: 'REMOVE_FROM_CART', payload: id });
+  const removeFromCart = (id, size = undefined) => {
+    dispatch({ type: 'REMOVE_FROM_CART', payload: { id, size } });
   };
 
-  const updateQuantity = (id, quantity) => {
+  const updateQuantity = (id, quantity, size = undefined) => {
     if (quantity <= 0) {
-      removeFromCart(id);
+      removeFromCart(id, size);
       return;
     }
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
+    dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity, size } });
   };
 
   const clearCart = () => {

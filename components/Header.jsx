@@ -1,39 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ShoppingCart, Menu, X, User, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 
-export default function Header({ cartCount: initialCartCount = 0 }) {
+export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(initialCartCount);
   const { user, logout, loading } = useAuth();
+  const { getTotalItems } = useCart();
 
-  useEffect(() => {
-    const updateCartCount = () => {
-      try {
-        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-        const count = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-        setCartCount(count);
-      } catch {
-        setCartCount(0);
-      }
-    };
-
-    updateCartCount();
-    window.addEventListener("cartUpdated", updateCartCount);
-    window.addEventListener("storage", updateCartCount);
-
-    return () => {
-      window.removeEventListener("cartUpdated", updateCartCount);
-      window.removeEventListener("storage", updateCartCount);
-    };
-  }, []);
-
-  useEffect(() => {
-    setCartCount(initialCartCount);
-  }, [initialCartCount]);
+  const cartCount = getTotalItems();
 
   const handleLogout = () => {
     logout();

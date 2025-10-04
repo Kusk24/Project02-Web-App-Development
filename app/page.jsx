@@ -6,10 +6,11 @@ import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useCart } from "../context/CartContext";
 
 export default function Home() {
   const [clothes, setClothes] = useState([]);
-  const [cartCount, setCartCount] = useState(0);
+  const { addToCart } = useCart();
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -21,46 +22,15 @@ export default function Home() {
       .catch((error) => console.error("Error fetching clothes:", error));
   }, [apiUrl]);
 
-  // Load cart from localStorage
-  useEffect(() => {
+  // Add to cart handler
+  const handleAddToCart = (item) => {
     try {
-      const savedCart = localStorage.getItem("cart");
-      if (savedCart) {
-        const cart = JSON.parse(savedCart);
-        const count = cart.reduce(
-          (sum, item) => sum + (item.quantity || 1),
-          0
-        );
-        setCartCount(count);
-      }
-    } catch (error) {
-      console.error("Error loading cart:", error);
-      setCartCount(0);
-    }
-  }, []);
-
-  // Add to cart
-  const addToCart = (item) => {
-    try {
-      const existingCart = localStorage.getItem("cart");
-      const cart = existingCart ? JSON.parse(existingCart) : [];
-
-      const existingItemIndex = cart.findIndex(
-        (cartItem) => cartItem.id === item.id && cartItem.size === item.size
-      );
-
-      if (existingItemIndex > -1) {
-        cart[existingItemIndex].quantity += 1;
-      } else {
-        cart.push({ ...item, quantity: 1, addedAt: new Date().toISOString() });
-      }
-
-      localStorage.setItem("cart", JSON.stringify(cart));
-
-      const newCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-      setCartCount(newCount);
-
-      window.dispatchEvent(new Event("cartUpdated"));
+      // Ensure item has an id field (use _id if available)
+      const cartItem = {
+        ...item,
+        id: item.id ?? item._id,
+      };
+      addToCart(cartItem);
       alert("✅ Item added to cart!");
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -70,7 +40,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header cartCount={cartCount} />
+      <Header />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-black to-gray-800 text-white">
@@ -120,7 +90,7 @@ export default function Home() {
                 <ProductCard
                   key={`${product._id}-${product.name}`}
                   product={product}
-                  onAddToCart={addToCart}
+                  onAddToCart={handleAddToCart}
                 />
               ))}
             </div>

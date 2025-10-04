@@ -110,7 +110,7 @@ export default function HistoryPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header cartCount={0} />
+      <Header />
 
       <section className="bg-gradient-to-r from-black to-gray-800 text-white">
         <div className="max-w-7xl mx-auto px-4 py-12 text-center">
