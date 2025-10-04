@@ -28,7 +28,7 @@ export default function Home() {
       // Ensure item has an id field (use _id if available)
       const cartItem = {
         ...item,
-        id: item.id || item._id,
+        id: item.id ?? item._id,
       };
       addToCart(cartItem);
       alert("✅ Item added to cart!");

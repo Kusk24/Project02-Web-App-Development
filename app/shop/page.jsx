@@ -80,7 +80,7 @@ export default function ShopPage() {
       // Ensure item has an id field (use _id if available)
       const cartItem = {
         ...item,
-        id: item.id || item._id,
+        id: item.id ?? item._id,
       };
       addToCartContext(cartItem);
       alert("✅ Item added to cart!");

@@ -5,8 +5,7 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 const CartContext = createContext();
 
 // Helper function to normalize size value (undefined/null -> null)
-const normalizeSize = (size) => size || null;
-
+const normalizeSize = (size) => (size === undefined || size === null ? null : size);
 // Helper function to check if size should be considered in matching
 const shouldCheckSize = (payload) => normalizeSize(payload.size) !== null;
 
