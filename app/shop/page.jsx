@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Header from "../../components/Header";
 import ProductCard from "../../components/ProductCard";
 import Footer from "../../components/Footer";
+import { useCart } from "../../context/CartContext";
 
 export default function ShopPage() {
   const [clothes, setClothes] = useState([]);
@@ -10,6 +11,7 @@ export default function ShopPage() {
   const [category, setCategory] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
   const [loading, setLoading] = useState(true);
+  const { addToCart: addToCartContext } = useCart();
 
   useEffect(() => {
     fetchClothes();
@@ -75,25 +77,12 @@ export default function ShopPage() {
 
   const addToCart = (item) => {
     try {
-      const existingCart = localStorage.getItem("cart");
-      const cart = existingCart ? JSON.parse(existingCart) : [];
-
-      const existingItemIndex = cart.findIndex(
-        (cartItem) => cartItem._id === item._id && cartItem.size === item.size
-      );
-
-      if (existingItemIndex > -1) {
-        cart[existingItemIndex].quantity += 1;
-      } else {
-        cart.push({
-          ...item,
-          quantity: 1,
-          addedAt: new Date().toISOString(),
-        });
-      }
-
-      localStorage.setItem("cart", JSON.stringify(cart));
-      window.dispatchEvent(new Event("cartUpdated"));
+      // Ensure item has an id field (use _id if available)
+      const cartItem = {
+        ...item,
+        id: item.id || item._id,
+      };
+      addToCartContext(cartItem);
       alert("✅ Item added to cart!");
     } catch (error) {
       console.error("Error adding to cart:", error);

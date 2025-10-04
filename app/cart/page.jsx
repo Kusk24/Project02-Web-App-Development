@@ -16,9 +16,10 @@ import Footer from "../../components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { useCart } from "../../context/CartContext";
 
 export default function CartPage() {
-  const [cart, setCart] = useState([]);
+  const { items: cart, updateQuantity: updateCartQuantity, removeFromCart, clearCart, getTotalPrice } = useCart();
   const [showCheckout, setShowCheckout] = useState(false);
   const [showProofUpload, setShowProofUpload] = useState(false);
   const [uploadChoice, setUploadChoice] = useState(null);
@@ -31,40 +32,27 @@ export default function CartPage() {
     phone: "",
     address: "",
   });
-  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   // ✅ only use API url for fetch
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
-  useEffect(() => {
-    const loadCart = () => {
-      const savedCart = localStorage.getItem("cart");
-      setCart(savedCart ? JSON.parse(savedCart) : []);
-      setIsLoading(false);
-    };
-    loadCart();
-    window.addEventListener("cartUpdated", loadCart);
-    return () => window.removeEventListener("cartUpdated", loadCart);
-  }, []);
-
-  useEffect(() => {
-    if (!isLoading) {
-      localStorage.setItem("cart", JSON.stringify(cart));
-    }
-  }, [cart, isLoading]);
-
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = getTotalPrice();
 
   const updateQuantity = (index, change) => {
-    const newCart = [...cart];
-    const newQuantity = (newCart[index].quantity || 1) + change;
-    if (newQuantity <= 0) return removeItem(index);
-    newCart[index].quantity = newQuantity;
-    setCart(newCart);
+    const item = cart[index];
+    const newQuantity = (item.quantity || 1) + change;
+    if (newQuantity <= 0) {
+      removeFromCart(item.id);
+    } else {
+      updateCartQuantity(item.id, newQuantity);
+    }
   };
 
-  const removeItem = (index) => setCart(cart.filter((_, i) => i !== index));
+  const removeItem = (index) => {
+    const item = cart[index];
+    removeFromCart(item.id);
+  };
 
   const handleCheckoutClick = () => setShowCheckout(true);
   const handleUserSubmit = (e) => {
@@ -127,9 +115,7 @@ export default function CartPage() {
       if (response.ok) {
         setUploadSuccess(true);
         setTimeout(() => {
-          setCart([]);
-          localStorage.removeItem("cart");
-          // ✅ no basePath here
+          clearCart();
           router.push("/history");
         }, 2000);
       } else {
@@ -145,9 +131,7 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header
-        cartCount={cart.reduce((sum, item) => sum + (item.quantity || 1), 0)}
-      />
+      <Header />
 
       {/* Page Header */}
       <section className="bg-gradient-to-r from-black to-gray-800 text-white">

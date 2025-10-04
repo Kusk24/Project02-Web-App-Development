@@ -13,15 +13,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useCart } from "../../context/CartContext";
 
 export default function ProductsPage() {
   const [clothes, setClothes] = useState([]);
-  const [cart, setCart] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("name");
   const [selectedSizes, setSelectedSizes] = useState({});
   const [addedToCart, setAddedToCart] = useState({});
-  const [cartCount, setCartCount] = useState(0);
+  const { addToCart: addToCartContext } = useCart();
 
   // Fetch products
   useEffect(() => {
@@ -44,25 +44,6 @@ export default function ProductsPage() {
     };
 
     fetchProducts();
-  }, []);
-
-  // Load cart from localStorage
-  useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
-    }
-  }, []);
-
-  // Save cart to localStorage whenever cart changes
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
-  // Load cart count on component mount
-  useEffect(() => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    setCartCount(cart.reduce((sum, item) => sum + (item.quantity || 1), 0));
   }, []);
 
   // Get unique categories
@@ -113,30 +94,9 @@ export default function ProductsPage() {
       price: product.price,
       size: selectedSize,
       image: product.image,
-      quantity: 1,
     };
 
-    const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-    const existingItemIndex = existingCart.findIndex(
-      (item) => item.id === cartItem.id && item.size === selectedSize
-    );
-
-    if (existingItemIndex >= 0) {
-      existingCart[existingItemIndex].quantity += 1;
-    } else {
-      existingCart.push(cartItem);
-    }
-
-    localStorage.setItem("cart", JSON.stringify(existingCart));
-
-    const newCartCount = existingCart.reduce(
-      (sum, item) => sum + (item.quantity || 1),
-      0
-    );
-    setCartCount(newCartCount);
-
-    window.dispatchEvent(new Event("cartUpdated"));
+    addToCartContext(cartItem);
 
     setAddedToCart((prev) => ({
       ...prev,
@@ -153,7 +113,7 @@ export default function ProductsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header cartCount={cartCount} />
+      <Header />
 
       {/* Page Header */}
       <div className="bg-white shadow-sm">
