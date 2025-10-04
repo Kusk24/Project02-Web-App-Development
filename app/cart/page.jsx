@@ -171,7 +171,7 @@ export default function CartPage() {
                 {cart.length === 0 ? (
                   // ✅ Empty Cart Message
                   <div className="text-center py-12">
-                    <div className="text-6xl mb-4">�️</div>
+                    <div className="text-6xl mb-4">💭</div>
                     <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--brown-soft)' }}>
                       Your cart is empty
                     </h3>
