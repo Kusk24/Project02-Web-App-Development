@@ -7,68 +7,68 @@ import jwt from 'jsonwebtoken';
 export const runtime = 'nodejs';
 
 export async function POST(request) {
-  const basePath = process.env.NEXT_PUBLIC_API_URL || '';
-  
   try {
     await connectDB();
-    
+
     const { email, password } = await request.json();
-    
-    console.log('Login attempt for email:', email);
-    
+
     if (!email || !password) {
       return NextResponse.json(
-        { message: 'Email and password are required', basePath: basePath },
+        { message: 'Email and password are required' },
         { status: 400 }
       );
     }
-    
+
     // Find user
     const user = await User.findOne({ email: email.toLowerCase() });
-    console.log('User found:', user ? 'Yes' : 'No');
-    
     if (!user) {
       return NextResponse.json(
-        { message: 'Invalid credentials', basePath: basePath },
+        { message: 'Invalid credentials' },
         { status: 401 }
       );
     }
-    
+
     // Check password
     const isMatch = await user.comparePassword(password);
-    console.log('Password match:', isMatch);
-    
     if (!isMatch) {
       return NextResponse.json(
-        { message: 'Invalid credentials', basePath: basePath },
+        { message: 'Invalid credentials' },
         { status: 401 }
       );
     }
-    
+
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       process.env.JWT_SECRET || 'fallback-secret-key',
       { expiresIn: '7d' }
     );
-    
-    // Return success response
-    return NextResponse.json({
-      token,
+
+    // Create response with cookie
+    const response = NextResponse.json({
+      success: true,
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
         phone: user.phone,
-        address: user.address
+        address: user.address,
       },
-      basePath: basePath
     });
-    
+
+    response.cookies.set('auth-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/', // cookie is valid for the whole site
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+
+    return response;
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { message: 'Internal server error: ' + error.message, basePath: basePath },
+      { message: 'Internal server error: ' + error.message },
       { status: 500 }
     );
   }

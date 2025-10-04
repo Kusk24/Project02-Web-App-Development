@@ -10,21 +10,17 @@ export default function Navbar() {
   const { user, logout, loading } = useAuth();
 
   useEffect(() => {
-    // Load cart count
     const updateCartCount = () => {
       try {
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
         const count = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
         setCartCount(count);
-      } catch (error) {
-        console.error('Error loading cart:', error);
+      } catch {
         setCartCount(0);
       }
     };
 
     updateCartCount();
-
-    // Listen for cart updates
     window.addEventListener('cartUpdated', updateCartCount);
     window.addEventListener('storage', updateCartCount);
 
@@ -35,11 +31,7 @@ export default function Navbar() {
   }, []);
 
   const handleLogout = () => {
-    logout();
-    
-    // Navigate to dynamic base path
-    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
-    window.location.href = basePath || '/';
+    logout();   // ✅ AuthContext handles redirect
   };
 
   return (
@@ -51,23 +43,16 @@ export default function Navbar() {
             <span className="text-2xl font-bold text-gray-900">Style Store</span>
           </Link>
 
-          {/* Navigation Links */}
+          {/* Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-gray-700 hover:text-gray-900 transition-colors">
-              Home
-            </Link>
-            <Link href="/shop" className="text-gray-700 hover:text-gray-900 transition-colors">
-              Shop
-            </Link>
-            <Link href="/sale" className="text-gray-700 hover:text-gray-900 transition-colors">
-              Sale
-            </Link>
+            <Link href="/" className="text-gray-700 hover:text-gray-900">Home</Link>
+            <Link href="/shop" className="text-gray-700 hover:text-gray-900">Shop</Link>
+            <Link href="/sale" className="text-gray-700 hover:text-gray-900">Sale</Link>
           </div>
 
-          {/* Right side buttons */}
+          {/* Right side */}
           <div className="flex items-center space-x-4">
-            {/* Cart */}
-            <Link href="/cart" className="relative p-2 text-gray-700 hover:text-gray-900 transition-colors">
+            <Link href="/cart" className="relative p-2 text-gray-700">
               <ShoppingCart size={24} />
               {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -76,16 +61,15 @@ export default function Navbar() {
               )}
             </Link>
 
-            {/* Auth */}
             {user ? (
               <div className="flex items-center space-x-2">
-                <Link href="/profile" className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors">
+                <Link href="/profile" className="flex items-center space-x-1 text-gray-700">
                   <User size={20} />
                   <span className="hidden md:inline">{user.name}</span>
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors"
+                  className="flex items-center space-x-1 text-gray-700 hover:text-gray-900"
                 >
                   <LogOut size={20} />
                   <span className="hidden md:inline">Logout</span>
@@ -93,10 +77,8 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="flex items-center space-x-2">
-                <Link href="/login" className="text-gray-700 hover:text-gray-900 transition-colors">
-                  Login
-                </Link>
-                <Link href="/register" className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors">
+                <Link href="/login" className="text-gray-700 hover:text-gray-900">Login</Link>
+                <Link href="/register" className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800">
                   Register
                 </Link>
               </div>

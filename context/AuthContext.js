@@ -5,147 +5,115 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null); // will store { name, email, phone, address, joinDate }
   const [loading, setLoading] = useState(true);
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+  // ✅ Always fetch user from session cookie
+  const fetchUser = async () => {
+    try {
+      const res = await fetch(`${apiUrl}/api/auth/session`, {
+        method: "GET",
+        credentials: "include", // cookie
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.authenticated && data.user) {
+          setUser(data.user); // should include phone, address, joinDate
+        } else {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      console.error("Failed to fetch session:", error);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedToken = localStorage.getItem('token');
-      const storedUser = localStorage.getItem('user');
-      
-      if (storedToken && storedUser) {
-        try {
-          setToken(storedToken);
-          setUser(JSON.parse(storedUser));
-          // Set cookie for middleware with proper formatting
-          const expires = new Date();
-          expires.setDate(expires.getDate() + 7);
-          document.cookie = `auth-token=${storedToken}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`;
-        } catch (error) {
-          console.error('Error parsing stored user data:', error);
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-        }
-      }
-    }
-    
-    setLoading(false);
-  }, []);
+    fetchUser();
+  }, [apiUrl]);
 
+  // ✅ login uses cookie session
   const login = async (email, password) => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-    
     try {
-      const response = await fetch(`${apiUrl}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+      const res = await fetch(`${apiUrl}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setToken(data.token);
+      const data = await res.json();
+      if (res.ok) {
         setUser(data.user);
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
-          // Set cookie with proper format and longer expiry
-          const expires = new Date();
-          expires.setDate(expires.getDate() + 7);
-          document.cookie = `auth-token=${data.token}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`;
-        }
         return { success: true };
-      } else {
-        return { success: false, message: data.message };
       }
+      return { success: false, message: data.message };
     } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, message: 'Network error' };
+      console.error("Login error:", error);
+      return { success: false, message: "Network error" };
     }
   };
 
-  const register = async (name, email, password, phone = '', address = '') => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-    
+  // ✅ register also sets cookie session
+  const register = async (name, email, password, phone, address) => {
     try {
-      const response = await fetch(`${apiUrl}/api/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          phone,
-          address,
-        }),
+      const res = await fetch(`${apiUrl}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ name, email, password, phone, address }),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setToken(data.token);
+      const data = await res.json();
+      if (res.ok) {
         setUser(data.user);
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
-          document.cookie = `auth-token=${data.token}; path=/; max-age=604800`; // 7 days
-        }
         return { success: true };
-      } else {
-        return { success: false, message: data.message };
       }
+      return { success: false, message: data.message };
     } catch (error) {
-      console.error('Registration error:', error);
-      return { success: false, message: 'Network error' };
+      console.error("Registration error:", error);
+      return { success: false, message: "Network error" };
     }
   };
 
-  const logout = () => {
-    setToken(null);
+  const logout = async () => {
+    try {
+      await fetch(`${apiUrl}/api/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (e) {
+      console.error("Logout failed:", e);
+    }
+
     setUser(null);
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      // Clear cookie properly
-      document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
-      
-      // Navigate to dynamic base path
-      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
-      window.location.href = basePath || '/';
-    }
-  };
-
-  const value = {
-    user,
-    token,
-    loading,
-    login,
-    register,
-    logout,
-    isAuthenticated: !!token,
+    window.location.href = `${basePath}/login`;
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        logout,
+        isAuthenticated: !!user,
+        refreshUser: fetchUser, // 👈 handy if you need to refetch after updates
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);

@@ -11,15 +11,15 @@ export default function Home() {
   const [clothes, setClothes] = useState([]);
   const [cartCount, setCartCount] = useState(0);
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+
   // Fetch products
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
     fetch(`${apiUrl}/api/clothes`)
       .then((res) => res.json())
       .then(setClothes)
       .catch((error) => console.error("Error fetching clothes:", error));
-  }, []);
+  }, [apiUrl]);
 
   // Load cart from localStorage
   useEffect(() => {
@@ -42,43 +42,26 @@ export default function Home() {
   // Add to cart
   const addToCart = (item) => {
     try {
-      console.log("Adding to cart:", item.name);
-
-      // Get existing cart
       const existingCart = localStorage.getItem("cart");
       const cart = existingCart ? JSON.parse(existingCart) : [];
 
-      // Check if item already exists
       const existingItemIndex = cart.findIndex(
         (cartItem) => cartItem.id === item.id && cartItem.size === item.size
       );
 
       if (existingItemIndex > -1) {
-        // Update quantity if exists
         cart[existingItemIndex].quantity += 1;
       } else {
-        // Add new item
-        cart.push({
-          ...item,
-          quantity: 1,
-          addedAt: new Date().toISOString(),
-        });
+        cart.push({ ...item, quantity: 1, addedAt: new Date().toISOString() });
       }
 
-      // Save to localStorage
       localStorage.setItem("cart", JSON.stringify(cart));
 
-      // Update cart count
       const newCount = cart.reduce((sum, item) => sum + item.quantity, 0);
       setCartCount(newCount);
 
-      // Dispatch custom event for header to update
       window.dispatchEvent(new Event("cartUpdated"));
-
-      // Show success message
       alert("✅ Item added to cart!");
-
-      console.log("Cart after add:", cart);
     } catch (error) {
       console.error("Error adding to cart:", error);
       alert("❌ Failed to add item to cart");
@@ -133,9 +116,9 @@ export default function Home() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {clothes.map((product) => (
+              {clothes.slice(0, 8).map((product) => (
                 <ProductCard
-                  key={`${product.id}-${product.size}`}
+                  key={`${product._id}-${product.name}`}
                   product={product}
                   onAddToCart={addToCart}
                 />

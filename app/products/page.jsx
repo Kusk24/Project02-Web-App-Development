@@ -14,82 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Sample product data
-const products = [
-  {
-    id: 1,
-    name: "Classic White T-Shirt",
-    price: 29.99,
-    originalPrice: 39.99,
-    image: "/api/placeholder/400/400",
-    rating: 4.5,
-    reviews: 128,
-    sizes: ["XS", "S", "M", "L", "XL"],
-    description:
-      "Premium cotton t-shirt with a comfortable fit. Perfect for everyday wear.",
-    sale: true,
-  },
-  {
-    id: 2,
-    name: "Denim Jacket",
-    price: 89.99,
-    image: "/api/placeholder/400/400",
-    rating: 4.8,
-    reviews: 95,
-    sizes: ["S", "M", "L", "XL"],
-    description:
-      "Classic denim jacket with a modern cut. Made from high-quality denim.",
-    sale: false,
-  },
-  {
-    id: 3,
-    name: "Black Jeans",
-    price: 79.99,
-    image: "/api/placeholder/400/400",
-    rating: 4.3,
-    reviews: 210,
-    sizes: ["28", "30", "32", "34", "36"],
-    description:
-      "Slim-fit black jeans with stretch for comfort and style.",
-    sale: false,
-  },
-  {
-    id: 4,
-    name: "Floral Summer Dress",
-    price: 65.99,
-    originalPrice: 85.99,
-    image: "/api/placeholder/400/400",
-    rating: 4.7,
-    reviews: 156,
-    sizes: ["XS", "S", "M", "L"],
-    description: "Light and airy floral dress perfect for summer days.",
-    sale: true,
-  },
-  {
-    id: 5,
-    name: "Wool Sweater",
-    price: 120.0,
-    image: "/api/placeholder/400/400",
-    rating: 4.6,
-    reviews: 89,
-    sizes: ["S", "M", "L", "XL"],
-    description:
-      "Cozy wool sweater for cold weather. Premium merino wool blend.",
-    sale: false,
-  },
-  {
-    id: 6,
-    name: "Running Shoes",
-    price: 149.99,
-    image: "/api/placeholder/400/400",
-    rating: 4.9,
-    reviews: 342,
-    sizes: ["7", "8", "9", "10", "11", "12"],
-    description: "High-performance running shoes with advanced cushioning.",
-    sale: false,
-  },
-];
-
 export default function ProductsPage() {
   const [clothes, setClothes] = useState([]);
   const [cart, setCart] = useState([]);
@@ -102,15 +26,15 @@ export default function ProductsPage() {
   // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-      
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+
       try {
         const response = await fetch(`${apiUrl}/api/clothes`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('✅ Fetched products from database:', data.length, 'items');
+        console.log("✅ Fetched products from database:", data.length, "items");
         setClothes(data);
       } catch (error) {
         console.error("❌ Error fetching products:", error);
@@ -174,9 +98,9 @@ export default function ProductsPage() {
     }));
   };
 
-  // Add to cart - modified to save to localStorage
+  // Add to cart
   const addToCart = (product) => {
-    const selectedSize = selectedSizes[product.id];
+    const selectedSize = selectedSizes[product._id || product.id];
 
     if (!selectedSize) {
       alert("Please select a size first!");
@@ -184,7 +108,7 @@ export default function ProductsPage() {
     }
 
     const cartItem = {
-      id: product.id,
+      id: product._id || product.id,
       name: product.name,
       price: product.price,
       size: selectedSize,
@@ -192,45 +116,37 @@ export default function ProductsPage() {
       quantity: 1,
     };
 
-    // Get existing cart
     const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-    // Check if item with same product and size already exists
     const existingItemIndex = existingCart.findIndex(
-      (item) => item.id === product.id && item.size === selectedSize
+      (item) => item.id === cartItem.id && item.size === selectedSize
     );
 
     if (existingItemIndex >= 0) {
-      // Update quantity if item exists
       existingCart[existingItemIndex].quantity += 1;
     } else {
-      // Add new item
       existingCart.push(cartItem);
     }
 
-    // Save to localStorage
     localStorage.setItem("cart", JSON.stringify(existingCart));
 
-    // Update cart count
     const newCartCount = existingCart.reduce(
       (sum, item) => sum + (item.quantity || 1),
       0
     );
     setCartCount(newCartCount);
 
-    // Dispatch event for other components
     window.dispatchEvent(new Event("cartUpdated"));
 
-    // Show success feedback
     setAddedToCart((prev) => ({
       ...prev,
-      [product.id]: true,
+      [cartItem.id]: true,
     }));
 
     setTimeout(() => {
       setAddedToCart((prev) => ({
         ...prev,
-        [product.id]: false,
+        [cartItem.id]: false,
       }));
     }, 2000);
   };
@@ -280,47 +196,24 @@ export default function ProductsPage() {
               </div>
             </div>
 
-            {/* Sort Options - Fixed with explicit styling */}
+            {/* Sort Options */}
             <div className="w-full lg:w-auto lg:min-w-[200px]">
               <div className="flex items-center gap-3 mb-3">
                 <SortAsc className="w-4 h-4 text-gray-700" />
-                <span className="text-sm font-medium text-gray-700">Sort by:</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Sort by:
+                </span>
               </div>
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-full bg-white border border-gray-300 shadow-sm">
                   <SelectValue placeholder="Select sorting option" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-md z-50">
-                  <SelectItem
-                    value="name-asc"
-                    className="bg-white hover:bg-gray-50 focus:bg-gray-50"
-                  >
-                    Name (A-Z)
-                  </SelectItem>
-                  <SelectItem
-                    value="name-desc"
-                    className="bg-white hover:bg-gray-50 focus:bg-gray-50"
-                  >
-                    Name (Z-A)
-                  </SelectItem>
-                  <SelectItem
-                    value="price-low"
-                    className="bg-white hover:bg-gray-50 focus:bg-gray-50"
-                  >
-                    Price: Low to High
-                  </SelectItem>
-                  <SelectItem
-                    value="price-high"
-                    className="bg-white hover:bg-gray-50 focus:bg-gray-50"
-                  >
-                    Price: High to Low
-                  </SelectItem>
-                  <SelectItem
-                    value="newest"
-                    className="bg-white hover:bg-gray-50 focus:bg-gray-50"
-                  >
-                    Newest First
-                  </SelectItem>
+                  <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                  <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                  <SelectItem value="price-low">Price: Low to High</SelectItem>
+                  <SelectItem value="price-high">Price: High to Low</SelectItem>
+                  <SelectItem value="newest">Newest First</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -354,15 +247,17 @@ export default function ProductsPage() {
             {/* Results Info */}
             <div className="mb-6 p-4 bg-white rounded-lg shadow-sm border">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <p className="text-gray-600 flex items-center gap-2">
-                  <span className="font-medium">Showing {filteredProducts.length}</span>
-                  of {clothes.length} products
+                <div className="text-gray-600 flex items-center gap-2">
+                  <span className="font-medium">
+                    Showing {filteredProducts.length}
+                  </span>
+                  <span>of {clothes.length} products</span>
                   {selectedCategory !== "All" && (
                     <Badge variant="secondary" className="ml-2">
                       {selectedCategory}
                     </Badge>
                   )}
-                </p>
+                </div>
                 <div className="flex items-center gap-2 text-sm text-gray-500">
                   <SortAsc className="w-4 h-4" />
                   <span>
@@ -379,11 +274,11 @@ export default function ProductsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.map((product) => (
                 <ProductCard
-                  key={`${product.id}-${product.size}`}
+                  key={product._id || product.id} // ✅ Unique key
                   product={product}
                   onAddToCart={addToCart}
                   onSizeSelect={handleSizeSelect}
-                  addedToCart={addedToCart[product.id]}
+                  addedToCart={addedToCart[product._id || product.id]}
                   setAddedToCart={setAddedToCart}
                 />
               ))}

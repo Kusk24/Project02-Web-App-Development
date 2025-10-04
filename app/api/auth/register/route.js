@@ -3,76 +3,78 @@ import connectDB from '../../../../lib/mongodb';
 import User from '../../../../models/User';
 import jwt from 'jsonwebtoken';
 
-// Force Node.js runtime for JWT compatibility
 export const runtime = 'nodejs';
 
 export async function POST(request) {
-  const basePath = process.env.NEXT_PUBLIC_API_URL || '';
-  
   try {
     await connectDB();
-    
+
     const { name, email, password, phone, address } = await request.json();
-    
-    // Validation
+
     if (!name || !email || !password || !phone || !address) {
       return NextResponse.json(
-        { message: 'All fields are required', basePath: basePath },
+        { message: 'All fields are required' },
         { status: 400 }
       );
     }
-    
+
     if (password.length < 6) {
       return NextResponse.json(
-        { message: 'Password must be at least 6 characters', basePath: basePath },
+        { message: 'Password must be at least 6 characters' },
         { status: 400 }
       );
     }
-    
-    // Check if user already exists
+
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return NextResponse.json(
-        { message: 'User already exists with this email', basePath: basePath },
+        { message: 'User already exists with this email' },
         { status: 400 }
       );
     }
-    
-    // Create new user
+
     const user = new User({
       name,
       email: email.toLowerCase(),
       password,
       phone,
-      address
+      address,
     });
-    
+
     await user.save();
-    
-    // Generate JWT token
+
+    // JWT Token
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       process.env.JWT_SECRET || 'fallback-secret-key',
       { expiresIn: '7d' }
     );
-    
-    // Return success response
-    return NextResponse.json({
-      token,
+
+    const response = NextResponse.json({
+      success: true,
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
         phone: user.phone,
-        address: user.address
+        address: user.address,
       },
-      basePath: basePath
-    }, { status: 201 });
-    
+    });
+
+    // Set cookie
+    response.cookies.set('auth-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+
+    return response;
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(
-      { message: 'Internal server error: ' + error.message, basePath: basePath },
+      { message: 'Internal server error: ' + error.message },
       { status: 500 }
     );
   }
