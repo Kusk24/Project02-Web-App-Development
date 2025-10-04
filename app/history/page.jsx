@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Check } from "lucide-react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { Button } from "@/components/ui/button";
@@ -102,87 +103,117 @@ export default function HistoryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-xl text-black">Loading orders...</div>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--cream)' }}>
+        <div className="text-center">
+          <div className="text-6xl mb-4 animate-bounce-soft">⏳</div>
+          <div className="text-xl font-bold" style={{ color: 'var(--brown-soft)' }}>Loading orders...</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--cream)' }}>
       <Header />
 
-      <section className="bg-gradient-to-r from-black to-gray-800 text-white">
+      <section 
+        className="shadow-lg"
+        style={{ 
+          background: 'linear-gradient(135deg, var(--mint) 0%, var(--cloud-blue) 100%)'
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 py-12 text-center">
-          <h1 className="text-4xl font-bold mb-4">Order History</h1>
-          <p className="text-xl text-gray-300">
-            Track your purchases and upload payment proofs
+          <div className="text-6xl mb-4 animate-float">📦✨</div>
+          <h1 className="text-4xl font-bold mb-4" style={{ color: 'var(--brown-soft)' }}>Order History</h1>
+          <p className="text-xl" style={{ color: 'var(--brown-soft)' }}>
+            Track your purchases and upload payment proofs 💖
           </p>
         </div>
       </section>
 
-      <section className="py-16">
+      <section className="py-16 flex-grow">
         <div className="max-w-6xl mx-auto px-4">
           {orders.length === 0 ? (
-            <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-              <div className="text-6xl mb-4">📦</div>
-              <h3 className="text-xl font-semibold text-black mb-2">
+            <div className="rounded-3xl shadow-xl p-12 text-center" style={{ backgroundColor: 'white' }}>
+              <div className="text-6xl mb-4">�️</div>
+              <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--brown-soft)' }}>
                 No orders found
               </h3>
-              <p className="text-black mb-6">
+              <p className="mb-6" style={{ color: 'var(--gray-light)' }}>
                 You haven&apos;t made any purchases yet. Start shopping to see
-                your order history here.
+                your order history here! ✨
               </p>
-              <Button onClick={() => router.push("/shop")}>
-                Start Shopping
-              </Button>
+              <button
+                onClick={() => router.push("/shop")}
+                className="px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all hover:scale-105 text-white"
+                style={{ backgroundColor: 'var(--coral)' }}
+              >
+                Start Shopping 🛒
+              </button>
             </div>
           ) : (
             <div className="space-y-6">
               {orders.map((order) => (
-                <Card key={order._id}>
-                  <CardHeader>
-                    <CardTitle className="text-black">
-                      Order #{order._id.slice(-6)} –{" "}
+                <Card key={order._id} className="shadow-lg rounded-3xl border-0 overflow-hidden">
+                  <CardHeader style={{ backgroundColor: 'var(--cloud-blue-light)' }}>
+                    <CardTitle className="flex items-center justify-between flex-wrap gap-2" style={{ color: 'var(--brown-soft)' }}>
+                      <span className="flex items-center gap-2">
+                        📦 Order #{order._id.slice(-6)}
+                      </span>
                       <span
-                        className={
+                        className="px-4 py-1 rounded-full text-sm font-bold shadow-sm"
+                        style={
                           order.status === "paid"
-                            ? "text-green-600"
-                            : "text-orange-600"
+                            ? { backgroundColor: 'var(--mint-vibrant)', color: 'white' }
+                            : { backgroundColor: 'var(--coral)', color: 'white' }
                         }
                       >
-                        {order.status.toUpperCase()}
+                        {order.status === "paid" ? "✅ PAID" : "⏳ UNPAID"}
                       </span>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <ul className="mb-4 text-black">
+                  <CardContent className="p-6" style={{ backgroundColor: 'white' }}>
+                    <ul className="mb-4 space-y-2">
                       {order.items.map((item, idx) => (
-                        <li key={idx} className="text-black">
-                          {item.name} (x{item.quantity}) – ${item.price}
+                        <li 
+                          key={idx} 
+                          className="flex items-center justify-between p-3 rounded-2xl"
+                          style={{ backgroundColor: 'var(--cream-warm)' }}
+                        >
+                          <span className="font-medium" style={{ color: 'var(--brown-soft)' }}>
+                            {item.name} <span className="text-sm" style={{ color: 'var(--gray-light)' }}>(x{item.quantity})</span>
+                          </span>
+                          <span className="font-bold" style={{ color: 'var(--coral)' }}>${item.price}</span>
                         </li>
                       ))}
                     </ul>
                     {order.paymentProof ? (
-                      <p className="text-green-600">
-                        ✅ Proof uploaded: {order.paymentProof}
-                      </p>
+                      <div className="p-4 rounded-2xl flex items-center gap-2" style={{ backgroundColor: 'var(--mint)', color: 'var(--brown-soft)' }}>
+                        <Check className="w-5 h-5" />
+                        <span className="font-medium">Proof uploaded: {order.paymentProof}</span>
+                      </div>
                     ) : (
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-col sm:flex-row items-stretch gap-3">
                         <Input
                           type="file"
                           onChange={handleFileChange}
-                          className="text-black"
+                          className="flex-grow rounded-full border-2"
+                          style={{ 
+                            borderColor: 'var(--cloud-blue)', 
+                            color: 'var(--brown-soft)',
+                            backgroundColor: 'var(--cream-warm)'
+                          }}
                         />
-                        <Button
+                        <button
                           onClick={() => handleUploadProof(order._id)}
                           disabled={uploadingOrderId === order._id}
-                          // no text-black here, keep default button text
+                          className="px-6 py-2 rounded-full font-bold shadow-md hover:shadow-lg transition-all hover:scale-105 disabled:opacity-50 text-white whitespace-nowrap"
+                          style={{ backgroundColor: 'var(--coral)' }}
                         >
                           {uploadingOrderId === order._id
-                            ? "Uploading..."
-                            : "Upload Proof"}
-                        </Button>
+                            ? "Uploading... ⏳"
+                            : "Upload Proof 📤"}
+                        </button>
                       </div>
                     )}
                   </CardContent>

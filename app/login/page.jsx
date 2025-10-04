@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LogIn } from "lucide-react";
+import { LogIn, Sparkles } from "lucide-react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ export default function LoginPage() {
     setLoading(true);
     const result = await login(email, password);
     if (result.success) {
-      router.push("/profile"); // ✅ no basePath here
+      router.push("/profile");
     } else {
       alert(result.message || "Login failed");
     }
@@ -40,64 +40,102 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--cream)' }}>
       <Header />
-      <section className="py-16">
-        <div className="max-w-md mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-center flex items-center justify-center gap-2 text-black">
-                <LogIn className="w-6 h-6 text-black" /> Sign In
+      <section className="py-16 flex-grow flex items-center">
+        <div className="max-w-md mx-auto w-full px-4">
+          <div className="text-center mb-8">
+            <div className="text-6xl mb-4 animate-float">✨🔐</div>
+            <h1 className="text-3xl font-bold" style={{ color: 'var(--brown-soft)' }}>
+              Welcome Back!
+            </h1>
+            <p style={{ color: 'var(--gray-light)' }}>Sign in to your account</p>
+          </div>
+
+          <Card 
+            className="shadow-xl rounded-3xl border-0"
+            style={{ backgroundColor: 'white' }}
+          >
+            <CardHeader className="pb-4">
+              <CardTitle className="text-center flex items-center justify-center gap-2" style={{ color: 'var(--brown-soft)' }}>
+                <LogIn className="w-6 h-6" /> Sign In
               </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin} className="space-y-6">
                 <div>
-                  <label className="text-black">Email</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--brown-soft)' }}>
+                    Email
+                  </label>
                   <Input
-                    className="text-black"
+                    className="rounded-full border-2 focus:ring-2 transition-all"
+                    style={{ 
+                      borderColor: 'var(--cloud-blue)', 
+                      color: 'var(--brown-soft)',
+                      backgroundColor: 'var(--cream-warm)'
+                    }}
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your.email@example.com"
                   />
                   {errors.email && (
-                    <p className="text-red-600">{errors.email}</p>
+                    <p className="text-sm mt-1" style={{ color: 'var(--coral)' }}>❌ {errors.email}</p>
                   )}
                 </div>
                 <div>
-                  <label className="text-black">Password</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--brown-soft)' }}>
+                    Password
+                  </label>
                   <Input
-                    className="text-black"
+                    className="rounded-full border-2 focus:ring-2 transition-all"
+                    style={{ 
+                      borderColor: 'var(--cloud-blue)', 
+                      color: 'var(--brown-soft)',
+                      backgroundColor: 'var(--cream-warm)'
+                    }}
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
                   />
                   {errors.password && (
-                    <p className="text-red-600">{errors.password}</p>
+                    <p className="text-sm mt-1" style={{ color: 'var(--coral)' }}>❌ {errors.password}</p>
                   )}
                 </div>
-                <Button type="submit" disabled={loading} className="w-full">
-                  {loading ? "Signing In..." : "Sign In"}
-                </Button>
-                <div className="text-center text-sm text-gray-600 mt-4">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-white"
+                  style={{ backgroundColor: 'var(--coral)' }}
+                >
+                  {loading ? "Signing In... ⏳" : "Sign In ✨"}
+                </button>
+                <div className="text-center text-sm mt-4" style={{ color: 'var(--brown-soft)' }}>
                   Don't have an account?{" "}
                   <button
                     type="button"
                     onClick={() => router.push("/register")}
-                    className="text-black font-semibold hover:underline"
+                    className="font-bold hover:underline transition-all"
+                    style={{ color: 'var(--coral)' }}
                   >
-                    Sign Up
+                    Sign Up 💖
                   </button>
                 </div>
               </form>
             </CardContent>
           </Card>
-          <div className="text-center mt-4">
+          
+          <div className="text-center mt-6">
             <button
-              onClick={() => router.back()}
-              className="text-gray-600 hover:text-black transition-colors"
+              onClick={() => router.push("/")}
+              className="px-6 py-2 rounded-full transition-all hover:scale-105 font-medium"
+              style={{ 
+                backgroundColor: 'var(--lavender)', 
+                color: 'var(--brown-soft)' 
+              }}
             >
-              ← Back to previous page
+              ← Back to Home
             </button>
           </div>
         </div>

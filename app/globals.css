@@ -4,15 +4,21 @@
 
 @layer theme {
   :root {
-    --color-background: #ffffff;
-    --color-foreground: #171717;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --color-background: #0a0a0a;
-      --color-foreground: #ededed;
-    }
+    /* Kawaii Theme Colors */
+    --cloud-blue: #BCE2F5;
+    --cloud-blue-light: #D5EEF9;
+    --cream: #FDF8ED;
+    --cream-warm: #FFFDF5;
+    --coral: #FFB69B;
+    --mint: #C7EEDD;
+    --mint-vibrant: #A4E8CC;
+    --brown-soft: #5A4A43;
+    --gray-light: #B0A9A3;
+    --lavender: #D1C7E0;
+    --lavender-pink: #E0C7D8;
+    
+    --color-background: #FDF8ED;
+    --color-foreground: #5A4A43;
   }
 }
 
@@ -20,10 +26,50 @@
   body {
     color: var(--color-foreground);
     background: var(--color-background);
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  /* Smooth rounded corners everywhere */
+  * {
+    border-radius: inherit;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--cream);
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--cloud-blue);
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #9DCFE8;
   }
 }
 
-@utility text-balance {
-  text-wrap: balance;
+/* Cute animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes bounce-soft {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-bounce-soft {
+  animation: bounce-soft 0.5s ease-in-out;
 }
