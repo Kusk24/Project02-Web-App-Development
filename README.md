@@ -181,7 +181,7 @@ Complete order management with payment tracking.
 - Order status: `paid`, `unpaid`, `pending`
 - 24-hour cancellation deadline for unpaid orders
 - Automatic reactivation of user listings on cancellation
-- 
+  
 
 ## 🚀 Features
 
