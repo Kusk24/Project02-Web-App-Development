@@ -110,11 +110,14 @@ export default function ProfilePage() {
         credentials: "include",
       });
 
+      const data = await res.json();
+
       if (res.ok) {
         alert("Account deleted successfully. We're sad to see you go! 💔");
-        logout();
+        // Clear auth context and redirect to login
+        await logout();
+        router.push("/login");
       } else {
-        const data = await res.json();
         alert(data.error || "Failed to delete account");
       }
     } catch (error) {
@@ -128,12 +131,19 @@ export default function ProfilePage() {
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--cream)' }}>
         <div className="text-center">
           <div className="text-6xl mb-4 animate-bounce-soft">⏳</div>
-          <div className="text-xl font-bold" style={{ color: 'var(--brown-soft)' }}>Loading...</div>
+          <div className="text-xl font-bold" style={{ color: 'var(--brown-soft)' }}>Loading profile...</div>
         </div>
       </div>
     );
   }
 
+  // Only redirect after loading is complete and user is confirmed to be null
+  if (!loading && !user) {
+    router.push("/login");
+    return null;
+  }
+
+  // Don't render until user is loaded
   if (!user) return null;
 
   return (

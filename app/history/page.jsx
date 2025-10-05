@@ -47,8 +47,10 @@ export default function HistoryPage() {
       }
     };
 
-    fetchOrders();
-  }, [user, apiUrl]);
+    if (user && !authLoading) {
+      fetchOrders();
+    }
+  }, [user, authLoading, apiUrl]);
 
   const handleFileChange = (e) => setProofFile(e.target.files[0]);
 
@@ -121,6 +123,18 @@ export default function HistoryPage() {
     }
   };
 
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--cream)' }}>
+        <div className="text-center">
+          <div className="text-6xl mb-4 animate-bounce-soft">⏳</div>
+          <div className="text-xl font-bold" style={{ color: 'var(--brown-soft)' }}>Loading orders...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state while auth is loading
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--cream)' }}>
