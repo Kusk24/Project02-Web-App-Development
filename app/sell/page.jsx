@@ -12,7 +12,7 @@ export default function SellPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const [myListings, setMyListings] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [listingsLoading, setListingsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
@@ -44,6 +44,7 @@ export default function SellPage() {
     const fetchMyListings = async () => {
       if (!user) return;
       
+      setListingsLoading(true);
       try {
         const res = await fetch(`${apiUrl}/api/clothes?userId=${user._id}`, {
           credentials: "include",
@@ -56,7 +57,7 @@ export default function SellPage() {
       } catch (error) {
         console.error("Error fetching listings:", error);
       } finally {
-        setLoading(false);
+        setListingsLoading(false);
       }
     };
 
@@ -214,7 +215,7 @@ export default function SellPage() {
     }
   };
 
-  if (authLoading || loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--cream)' }}>
         <div className="text-center">
@@ -465,7 +466,17 @@ export default function SellPage() {
               My Listings ({myListings.length})
             </h2>
 
-            {myListings.length === 0 ? (
+            {listingsLoading ? (
+              <div className="text-center py-16 rounded-3xl shadow-xl" style={{ backgroundColor: 'white' }}>
+                <div className="text-6xl mb-4 animate-bounce-soft">⏳</div>
+                <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--brown-soft)' }}>
+                  Loading your listings...
+                </h3>
+                <p style={{ color: 'var(--gray-light)' }}>
+                  Just a moment! ✨
+                </p>
+              </div>
+            ) : myListings.length === 0 ? (
               <div className="text-center py-16 rounded-3xl shadow-xl" style={{ backgroundColor: 'white' }}>
                 <div className="text-6xl mb-4">📦</div>
                 <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--brown-soft)' }}>

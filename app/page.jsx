@@ -10,16 +10,24 @@ import { useCart } from "../context/CartContext";
 
 export default function Home() {
   const [clothes, setClothes] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
   // Fetch products
   useEffect(() => {
+    setLoading(true);
     fetch(`${apiUrl}/api/clothes`)
       .then((res) => res.json())
-      .then(setClothes)
-      .catch((error) => console.error("Error fetching clothes:", error));
+      .then((data) => {
+        setClothes(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching clothes:", error);
+        setLoading(false);
+      });
   }, [apiUrl]);
 
   // Add to cart handler
@@ -84,7 +92,20 @@ export default function Home() {
             </p>
           </div>
 
-          {clothes.length === 0 ? (
+          {loading ? (
+            <div 
+              className="text-center py-16 rounded-3xl shadow-lg"
+              style={{ backgroundColor: 'white' }}
+            >
+              <div className="text-6xl mb-4 animate-bounce-soft">⏳</div>
+              <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--brown-soft)' }}>
+                Loading products...
+              </h3>
+              <p style={{ color: 'var(--gray-light)' }}>
+                Just a moment! ✨
+              </p>
+            </div>
+          ) : clothes.length === 0 ? (
             <div 
               className="text-center py-16 rounded-3xl shadow-lg"
               style={{ backgroundColor: 'white' }}
