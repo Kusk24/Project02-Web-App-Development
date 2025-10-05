@@ -220,7 +220,7 @@ export default function SellPage() {
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--cream)' }}>
         <div className="text-center">
           <div className="text-6xl mb-4 animate-bounce-soft">⏳</div>
-          <p style={{ color: 'var(--brown-soft)' }}>Loading...</p>
+          <p className="text-lg font-medium" style={{ color: 'var(--brown-soft)' }}>Loading products...</p>
         </div>
       </div>
     );
@@ -467,14 +467,9 @@ export default function SellPage() {
             </h2>
 
             {listingsLoading ? (
-              <div className="text-center py-16 rounded-3xl shadow-xl" style={{ backgroundColor: 'white' }}>
+              <div className="text-center py-12">
                 <div className="text-6xl mb-4 animate-bounce-soft">⏳</div>
-                <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--brown-soft)' }}>
-                  Loading your listings...
-                </h3>
-                <p style={{ color: 'var(--gray-light)' }}>
-                  Just a moment! ✨
-                </p>
+                <p className="text-lg font-medium" style={{ color: 'var(--brown-soft)' }}>Loading products...</p>
               </div>
             ) : myListings.length === 0 ? (
               <div className="text-center py-16 rounded-3xl shadow-xl" style={{ backgroundColor: 'white' }}>

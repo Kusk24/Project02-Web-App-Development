@@ -93,17 +93,9 @@ export default function Home() {
           </div>
 
           {loading ? (
-            <div 
-              className="text-center py-16 rounded-3xl shadow-lg"
-              style={{ backgroundColor: 'white' }}
-            >
+            <div className="text-center py-12">
               <div className="text-6xl mb-4 animate-bounce-soft">⏳</div>
-              <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--brown-soft)' }}>
-                Loading products...
-              </h3>
-              <p style={{ color: 'var(--gray-light)' }}>
-                Just a moment! ✨
-              </p>
+              <p className="text-lg font-medium" style={{ color: 'var(--brown-soft)' }}>Loading products...</p>
             </div>
           ) : clothes.length === 0 ? (
             <div 

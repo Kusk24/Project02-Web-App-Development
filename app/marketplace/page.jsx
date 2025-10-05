@@ -100,7 +100,7 @@ export default function MarketplacePage() {
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--cream)' }}>
         <div className="text-center">
           <div className="text-6xl mb-4 animate-bounce-soft">⏳</div>
-          <p style={{ color: 'var(--brown-soft)' }}>Loading marketplace...</p>
+          <p className="text-lg font-medium" style={{ color: 'var(--brown-soft)' }}>Loading products...</p>
         </div>
       </div>
     );
