@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '../../../lib/mongodb';
 import Sale from '../../../models/Sale';
+import Cloth from '../../../models/Cloth';
 import jwt from 'jsonwebtoken';
 
 export const runtime = 'nodejs';
@@ -62,6 +63,23 @@ export async function POST(req) {
     });
 
     await newOrder.save();
+
+    // Mark user listings as sold
+    console.log('🔄 Checking for user listings in order...');
+    for (const item of body.items) {
+      try {
+        const cloth = await Cloth.findById(item.id);
+        if (cloth && cloth.user) {
+          // This is a user listing, mark as sold
+          cloth.status = 'sold';
+          await cloth.save();
+          console.log(`✅ Marked cloth ${cloth._id} (${cloth.name}) as SOLD`);
+        }
+      } catch (err) {
+        console.error(`Error updating cloth ${item.id}:`, err);
+        // Continue with order even if marking sold fails
+      }
+    }
 
     return NextResponse.json(newOrder, { status: 201 });
   } catch (error) {

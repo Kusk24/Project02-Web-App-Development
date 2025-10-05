@@ -7,39 +7,33 @@ import Footer from "../../components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { useAuth } from "../../context/AuthContext";
 
 export default function HistoryPage() {
   const [orders, setOrders] = useState([]);
   const [proofFile, setProofFile] = useState(null);
   const [uploadingOrderId, setUploadingOrderId] = useState(null);
-  const [user, setUser] = useState(null);
+  const [cancellingOrderId, setCancellingOrderId] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
+
   useEffect(() => {
     const fetchOrders = async () => {
+      if (!user) return;
+      
       try {
-        const sessionRes = await fetch(`${apiUrl}/api/auth/session`, {
-          credentials: "include",
-        });
-
-        if (!sessionRes.ok) {
-          router.push("/login");
-          return;
-        }
-
-        const sessionData = await sessionRes.json();
-        if (!sessionData.authenticated) {
-          router.push("/login");
-          return;
-        }
-
-        setUser(sessionData.user);
-
         const res = await fetch(
-          `${apiUrl}/api/orders?email=${sessionData.user.email}`,
+          `${apiUrl}/api/orders?email=${user.email}`,
           { credentials: "include" }
         );
         if (res.ok) {
@@ -54,7 +48,7 @@ export default function HistoryPage() {
     };
 
     fetchOrders();
-  }, [router, apiUrl]);
+  }, [user, apiUrl]);
 
   const handleFileChange = (e) => setProofFile(e.target.files[0]);
 
@@ -101,7 +95,33 @@ export default function HistoryPage() {
     }
   };
 
-  if (loading) {
+  const handleCancelOrder = async (orderId) => {
+    const confirmed = confirm("Are you sure you want to cancel this order? This action cannot be undone. 😢");
+    if (!confirmed) return;
+
+    setCancellingOrderId(orderId);
+
+    try {
+      const res = await fetch(`${apiUrl}/api/orders/${orderId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!res.ok) throw new Error("Failed to cancel order");
+
+      // Remove order from list
+      setOrders((prev) => prev.filter((order) => order._id !== orderId));
+
+      alert("✓ Order cancelled successfully!");
+    } catch (err) {
+      console.error("Cancel error:", err);
+      alert("❌ Failed to cancel order");
+    } finally {
+      setCancellingOrderId(null);
+    }
+  };
+
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--cream)' }}>
         <div className="text-center">
@@ -110,6 +130,11 @@ export default function HistoryPage() {
         </div>
       </div>
     );
+  }
+
+  // Don't render if user is not logged in (will redirect)
+  if (!user) {
+    return null;
   }
 
   return (
@@ -193,27 +218,41 @@ export default function HistoryPage() {
                         <span className="font-medium">Proof uploaded: {order.paymentProof}</span>
                       </div>
                     ) : (
-                      <div className="flex flex-col sm:flex-row items-stretch gap-3">
-                        <Input
-                          type="file"
-                          onChange={handleFileChange}
-                          className="flex-grow rounded-full border-2"
-                          style={{ 
-                            borderColor: 'var(--cloud-blue)', 
-                            color: 'var(--brown-soft)',
-                            backgroundColor: 'var(--cream-warm)'
-                          }}
-                        />
-                        <button
-                          onClick={() => handleUploadProof(order._id)}
-                          disabled={uploadingOrderId === order._id}
-                          className="px-6 py-2 rounded-full font-bold shadow-md hover:shadow-lg transition-all hover:scale-105 disabled:opacity-50 text-white whitespace-nowrap"
-                          style={{ backgroundColor: 'var(--coral)' }}
-                        >
-                          {uploadingOrderId === order._id
-                            ? "Uploading... ⏳"
-                            : "Upload Proof 📤"}
-                        </button>
+                      <div className="space-y-3">
+                        <div className="flex flex-col sm:flex-row items-stretch gap-3">
+                          <Input
+                            type="file"
+                            onChange={handleFileChange}
+                            className="flex-grow rounded-full border-2"
+                            style={{ 
+                              borderColor: 'var(--cloud-blue)', 
+                              color: 'var(--brown-soft)',
+                              backgroundColor: 'var(--cream-warm)'
+                            }}
+                          />
+                          <button
+                            onClick={() => handleUploadProof(order._id)}
+                            disabled={uploadingOrderId === order._id}
+                            className="px-6 py-2 rounded-full font-bold shadow-md hover:shadow-lg transition-all hover:scale-105 disabled:opacity-50 text-white whitespace-nowrap"
+                            style={{ backgroundColor: 'var(--coral)' }}
+                          >
+                            {uploadingOrderId === order._id
+                              ? "Uploading... ⏳"
+                              : "Upload Proof 📤"}
+                          </button>
+                        </div>
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => handleCancelOrder(order._id)}
+                            disabled={cancellingOrderId === order._id}
+                            className="px-6 py-2 rounded-full font-bold shadow-md hover:shadow-lg transition-all hover:scale-105 disabled:opacity-50 text-white"
+                            style={{ backgroundColor: '#EF4444' }}
+                          >
+                            {cancellingOrderId === order._id
+                              ? "Cancelling... ⏳"
+                              : "❌ Cancel Order"}
+                          </button>
+                        </div>
                       </div>
                     )}
                   </CardContent>

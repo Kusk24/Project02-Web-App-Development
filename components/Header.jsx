@@ -58,8 +58,22 @@ export default function Header() {
             >
               Shop
             </Link>
+            <Link 
+              href="/marketplace" 
+              className="font-medium transition-all duration-200 hover:scale-105"
+              style={{ color: 'var(--brown-soft)' }}
+            >
+              Buy from Users 🛍️
+            </Link>
             {user && (
               <>
+                <Link 
+                  href="/sell" 
+                  className="font-medium transition-all duration-200 hover:scale-105"
+                  style={{ color: 'var(--brown-soft)' }}
+                >
+                  Sell 👗
+                </Link>
                 <Link 
                   href="/profile" 
                   className="font-medium transition-all duration-200 hover:scale-105"
@@ -170,8 +184,24 @@ export default function Header() {
           >
             Shop
           </Link>
+          <Link 
+            href="/marketplace" 
+            className="py-2 px-4 rounded-full transition-all hover:scale-105"
+            style={{ color: 'var(--brown-soft)', backgroundColor: 'var(--cloud-blue-light)' }}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            🛍️ Buy from Users
+          </Link>
           {user && (
             <>
+              <Link 
+                href="/sell" 
+                className="py-2 px-4 rounded-full transition-all hover:scale-105"
+                style={{ color: 'var(--brown-soft)', backgroundColor: 'var(--cloud-blue-light)' }}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                👗 Sell Your Clothes
+              </Link>
               <Link 
                 href="/profile" 
                 className="py-2 px-4 rounded-full transition-all hover:scale-105"
