@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LogIn, Sparkles } from "lucide-react";
 import Header from "../../components/Header";
@@ -15,7 +15,14 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push("/");
+    }
+  }, [user, authLoading, router]);
 
   const validateForm = () => {
     const errs = {};
@@ -38,6 +45,23 @@ export default function LoginPage() {
     }
     setLoading(false);
   };
+
+  // Show loading while checking auth status
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--cream)' }}>
+        <div className="text-center">
+          <div className="text-6xl mb-4 animate-bounce-soft">✨</div>
+          <p style={{ color: 'var(--brown-soft)' }}>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if user is logged in (will redirect)
+  if (user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--cream)' }}>

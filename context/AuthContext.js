@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ✅ register also sets cookie session
+  // ✅ register - don't auto-login, just create account
   const register = async (name, email, password, phone, address) => {
     try {
       const res = await fetch(`${apiUrl}/api/auth/register`, {
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
 
       const data = await res.json();
       if (res.ok) {
-        setUser(data.user);
+        // Don't set user here - let them login manually
         return { success: true };
       }
       return { success: false, message: data.message };

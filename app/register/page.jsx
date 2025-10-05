@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { UserPlus, Sparkles } from "lucide-react";
 import Header from "../../components/Header";
@@ -19,7 +19,14 @@ export default function RegisterPage() {
   });
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { register } = useAuth();
+  const { register, user, loading: authLoading } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push("/");
+    }
+  }, [user, authLoading, router]);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -35,12 +42,31 @@ export default function RegisterPage() {
       form.address
     );
     if (result.success) {
-      router.push("/profile");
+      // Redirect to login page after successful registration
+      alert("Account created successfully! Please log in. 🎉");
+      router.push("/login");
     } else {
       alert(result.message || "Registration failed");
     }
     setLoading(false);
   };
+
+  // Show loading while checking auth status
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--cream)' }}>
+        <div className="text-center">
+          <div className="text-6xl mb-4 animate-bounce-soft">✨</div>
+          <p style={{ color: 'var(--brown-soft)' }}>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if user is logged in (will redirect)
+  if (user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--cream)' }}>
