@@ -1,12 +1,20 @@
 # 👗 StyleHub - Fashion E-Commerce Platform
 
-A modern, full-stack clothing e-commerce platform with peer-to-peer marketplace functionality. Built with Next.js, MongoDB, and featuring complete CRUD operations for three core data models.
+A modern, full-stack clothing e-commerce platform with peer-to-peer marketplace functionality. Built with Next.js, MongoDB, and featuring complete **CRUD** operations for three core data models.
 
 ## 👥 Team Members
 
 - **Win Yu Maung** - [GitHub Profile](https://github.com/Kusk24)
 - **Sam Yati** - [GitHub Profile](https://github.com/narattscoward)
 - **Phonvan Deelertpattana** - [GitHub Profile](https://github.com/IamPailin)
+
+## 🎥 Demo Video
+
+Watch our project demo: [YouTube Link](https://youtube.com/placeholder)
+
+## 🚀 Live Deployment
+
+**Azure Web App**: [https://wad-6612054.eastus.cloudapp.azure.com/app/project02](https://wad-6612054.eastus.cloudapp.azure.com/app/project02)
 
 ## 📝 Project Description
 
@@ -38,7 +46,7 @@ The platform features a kawaii-inspired design with pastel colors, smooth animat
 - **API**: RESTful API with Next.js Route Handlers
 
 ### Deployment
-- **Platform**: Vercel (Production)
+- **Platform**: Azure
 - **Database**: MongoDB Atlas
 
 ## � Data Models (CRUD Operations)
@@ -51,10 +59,10 @@ Complete user authentication and profile management system.
 - Auto-generated: `createdAt`
 
 **CRUD Operations:**
-- ✅ **CREATE** - User registration (`POST /api/auth/register`)
-- ✅ **READ** - Get user session (`GET /api/auth/session`)
-- ✅ **UPDATE** - Update profile with password verification (`PATCH /api/users`)
-- ✅ **DELETE** - Delete account (`DELETE /api/users`)
+- ✅ **C**reate - User registration (`POST /api/auth/register`)
+- ✅ **R**ead - Get user session (`GET /api/auth/session`)
+- ✅ **U**pdate - Update profile with password verification (`PATCH /api/users`)
+- ✅ **D**elete - Delete account (`DELETE /api/users`)
 
 **Additional Features:**
 - JWT-based authentication
@@ -71,10 +79,10 @@ Dual-purpose model for both shop inventory and user marketplace listings.
 - Timestamps: `createdAt`, `updatedAt`
 
 **CRUD Operations:**
-- ✅ **CREATE** - Add shop items or user listings (`POST /api/clothes`)
-- ✅ **READ** - Get all clothes with filters (`GET /api/clothes?marketplace=true&userId=xxx`)
-- ✅ **UPDATE** - Edit listing details and status (`PATCH /api/clothes/[id]`)
-- ✅ **DELETE** - Remove listings with ownership verification (`DELETE /api/clothes/[id]`)
+- ✅ **C**reate - Add shop items or user listings (`POST /api/clothes`)
+- ✅ **R**ead - Get all clothes with filters (`GET /api/clothes?marketplace=true&userId=xxx`)
+- ✅ **U**pdate - Edit listing details and status (`PATCH /api/clothes/[id]`)
+- ✅ **D**elete - Remove listings with ownership verification (`DELETE /api/clothes/[id]`)
 
 **Smart Features:**
 - `user: null` → Shop item (official store)
@@ -96,10 +104,10 @@ Complete order management with payment tracking.
 - Timestamps: `createdAt`
 
 **CRUD Operations:**
-- ✅ **CREATE** - Place new order (`POST /api/orders`)
-- ✅ **READ** - Get user's order history (`GET /api/orders?email=xxx`)
-- ✅ **UPDATE** - Update payment status (`PATCH /api/orders/[id]`)
-- ✅ **DELETE** - Cancel unpaid orders (`DELETE /api/orders/[id]`)
+- ✅ **C**reate - Place new order (`POST /api/orders`)
+- ✅ **R**ead - Get user's order history (`GET /api/orders?email=xxx`)
+- ✅ **U**pdate - Update payment status (`PATCH /api/orders/[id]`)
+- ✅ **D**elete - Cancel unpaid orders (`DELETE /api/orders/[id]`)
 
 **Advanced Features:**
 - Payment proof upload (now or later)
@@ -107,9 +115,35 @@ Complete order management with payment tracking.
 - 24-hour cancellation deadline for unpaid orders
 - Automatic reactivation of user listings on cancellation
 
+## 📝 API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/session` - Get current user session
+
+### Users
+- `PATCH /api/users` - Update user profile
+- `DELETE /api/users` - Delete user account
+
+### Clothes
+- `GET /api/clothes` - Get all clothes (with filters)
+- `POST /api/clothes` - Create new listing
+- `GET /api/clothes/[id]` - Get single cloth
+- `PATCH /api/clothes/[id]` - Update cloth
+- `DELETE /api/clothes/[id]` - Delete cloth
+
+### Orders
+- `GET /api/orders` - Get user's orders
+- `POST /api/orders` - Create new order
+- `GET /api/orders/[id]` - Get single order
+- `PATCH /api/orders/[id]` - Update order status
+- `DELETE /api/orders/[id]` - Cancel order
+
 ## 📸 Screenshots
 
-### User CRUD Operations
+### User **CRUD** Operations
 ![User Create - Registration](screenshots/User_Create.png)
 *User registration with validation*
 
@@ -122,7 +156,7 @@ Complete order management with payment tracking.
 ![User Delete - Account Deletion](screenshots/User_Delete.png)
 *Account deletion confirmation*
 
-### Cloth CRUD Operations
+### Cloth **CRUD** Operations
 ![Cloth Create - Add Listing](screenshots/Cloth_Create.png)
 *Create new clothing listing*
 
@@ -135,7 +169,7 @@ Complete order management with payment tracking.
 ![Cloth Delete - Remove Listing](screenshots/Cloth_Delete.png)
 *Delete listing confirmation*
 
-### Order CRUD Operations
+### Order **CRUD** Operations
 ![Order Create - Checkout](screenshots/Order_Create.png)
 *Place new order with payment*
 
@@ -194,9 +228,9 @@ project02-web-app-development/
 ├── app/
 │   ├── api/
 │   │   ├── auth/          # Authentication routes
-│   │   ├── clothes/       # Cloth CRUD operations
-│   │   ├── orders/        # Order CRUD operations
-│   │   └── users/         # User CRUD operations
+│   │   ├── clothes/       # Cloth **CRUD** operations
+│   │   ├── orders/        # Order **CRUD** operations
+│   │   └── users/         # User **CRUD** operations
 │   ├── cart/              # Shopping cart page
 │   ├── history/           # Order history page
 │   ├── login/             # Login page
@@ -248,47 +282,6 @@ project02-web-app-development/
 5. **Open browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
-## 🚢 Deployment
-
-### Production URL
-[https://stylehub-fashion.vercel.app](https://stylehub-fashion.vercel.app)
-
-### Deployment Steps
-1. Push code to GitHub
-2. Connect repository to Vercel
-3. Configure environment variables
-4. Deploy automatically on push to `main` branch
-
-## 🎥 Demo Video
-
-Watch our 5-minute demo: [YouTube Link (Unlisted)](https://youtube.com/placeholder)
-
-## 📝 API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-- `GET /api/auth/session` - Get current user session
-
-### Users
-- `PATCH /api/users` - Update user profile
-- `DELETE /api/users` - Delete user account
-
-### Clothes
-- `GET /api/clothes` - Get all clothes (with filters)
-- `POST /api/clothes` - Create new listing
-- `GET /api/clothes/[id]` - Get single cloth
-- `PATCH /api/clothes/[id]` - Update cloth
-- `DELETE /api/clothes/[id]` - Delete cloth
-
-### Orders
-- `GET /api/orders` - Get user's orders
-- `POST /api/orders` - Create new order
-- `GET /api/orders/[id]` - Get single order
-- `PATCH /api/orders/[id]` - Update order status
-- `DELETE /api/orders/[id]` - Cancel order
-
 ## 🔒 Security Features
 
 - JWT tokens stored in HTTP-only cookies
@@ -298,23 +291,8 @@ Watch our 5-minute demo: [YouTube Link (Unlisted)](https://youtube.com/placehold
 - Ownership verification for user operations
 - Input validation and sanitization
 
-## 🤝 Contributing
-
-Contributions are tracked through GitHub commit history. Each team member's contributions are visible in the repository insights.
-
-## 📄 License
-
-This project is developed as part of academic coursework at [University Name].
-
-## 🙏 Acknowledgments
-
-- Next.js team for the amazing framework
-- shadcn/ui for beautiful components
-- Tailwind CSS for utility-first styling
-- MongoDB for database solutions
-
 ---
 
+**Final Project Submission**  
+**Course**: Web Application Development  
 **Project Duration**: 20 hours per team member  
-**Semester Weight**: 20% of final grade  
-**Submission Date**: [Last week of semester - before final exam]
