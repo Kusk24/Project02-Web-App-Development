@@ -288,9 +288,30 @@ project02-web-app-development/
 3. **Set up environment variables**
    Create a `.env.local` file:
    ```env
-   MONGODB_URI=your_mongodb_connection_string
-   JWT_SECRET=your_jwt_secret_key
+   # MongoDB Configuration
+   MONGODB_URI=mongodb+srv://your_username:your_password@cluster.mongodb.net/Project02?retryWrites=true&w=majority&appName=Cluster0
+   
+   # JWT Authentication
+   JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+   NEXTAUTH_SECRET=your-nextauth-secret-key
+   NEXTAUTH_URL=http://localhost:3000
+   # API URL (should match the basePath from next.config.js)
    NEXT_PUBLIC_API_URL=http://localhost:3000
+   # Base path for navigation (leave empty for local development)
+   NEXT_PUBLIC_BASE_PATH=
+   # Environment
+   NODE_ENV=development
+   ```
+   
+   **For Azure Deployment**, use:
+   ```env
+   MONGODB_URI=mongodb+srv://your_username:your_password@cluster.mongodb.net/Project02?retryWrites=true&w=majority&appName=Cluster0
+   JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+   NEXTAUTH_SECRET=your-nextauth-secret-key
+   NEXTAUTH_URL=https://your-domain.cloudapp.azure.com
+   NEXT_PUBLIC_API_URL=https://your-domain.cloudapp.azure.com/app/project02
+   NEXT_PUBLIC_BASE_PATH=/app/project02
+   NODE_ENV=production
    ```
 
 4. **Run development server**
