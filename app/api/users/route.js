@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import connectDB from '../../../lib/mongodb';
 import User from '../../../models/User';
 import jwt from 'jsonwebtoken';
@@ -26,7 +27,7 @@ export async function PATCH(req) {
     // Get user from token
     const userToken = getUserFromToken(req);
     if (!userToken) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await req.json();
@@ -35,18 +36,18 @@ export async function PATCH(req) {
     // Find user
     const user = await User.findById(userToken.userId);
     if (!user) {
-      return Response.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // If changing password, verify current password
     if (newPassword) {
       if (!currentPassword) {
-        return Response.json({ error: 'Current password required to change password' }, { status: 400 });
+        return NextResponse.json({ error: 'Current password required to change password' }, { status: 400 });
       }
 
       const isMatch = await user.comparePassword(currentPassword);
       if (!isMatch) {
-        return Response.json({ error: 'Current password is incorrect' }, { status: 400 });
+        return NextResponse.json({ error: 'Current password is incorrect' }, { status: 400 });
       }
 
       // Hash new password
@@ -72,7 +73,7 @@ export async function PATCH(req) {
       joinDate: user.joinDate,
     };
 
-    return Response.json({ 
+    return NextResponse.json({ 
       message: 'Profile updated successfully',
       user: updatedUser 
     });
@@ -81,10 +82,10 @@ export async function PATCH(req) {
     
     // Handle duplicate email error
     if (error.code === 11000) {
-      return Response.json({ error: 'Email already exists' }, { status: 400 });
+      return NextResponse.json({ error: 'Email already exists' }, { status: 400 });
     }
     
-    return Response.json({ error: 'Failed to update profile' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
   }
 }
 
@@ -96,30 +97,35 @@ export async function DELETE(req) {
     // Get user from token
     const userToken = getUserFromToken(req);
     if (!userToken) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Find and delete user
     const deletedUser = await User.findByIdAndDelete(userToken.userId);
     if (!deletedUser) {
-      return Response.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Clear auth cookie
-    const response = Response.json({ 
+    console.log('✅ User deleted successfully:', deletedUser._id);
+
+    // Create response with success message
+    const response = NextResponse.json({ 
+      success: true,
       message: 'Account deleted successfully' 
     });
     
+    // Clear auth cookie
     response.cookies.set('auth-token', '', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: 0,
       path: '/',
     });
 
     return response;
   } catch (error) {
-    console.error('Error deleting user:', error);
-    return Response.json({ error: 'Failed to delete account' }, { status: 500 });
+    console.error('❌ Error deleting user:', error);
+    return NextResponse.json({ error: 'Failed to delete account' }, { status: 500 });
   }
 }
