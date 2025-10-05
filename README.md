@@ -10,7 +10,7 @@ A modern, full-stack clothing e-commerce platform with peer-to-peer marketplace 
 
 ## 🎥 Demo Video
 
-Watch our project demo: [YouTube Link](https://youtube.com/placeholder)
+Watch our project demo: [YouTube Link](https://youtu.be/WV-b_hDXUvw)
 
 ## 🚀 Live Deployment
 
@@ -144,41 +144,60 @@ Complete order management with payment tracking.
 ## 📸 Screenshots
 
 ### User **CRUD** Operations
+
+#### **Create** - User Registration
 ![User Create - Registration](screenshots/User_Create.png)
 *User registration with validation*
 
+#### **Read** - View Profile
 ![User Read - Profile View](screenshots/User_Read.png)
 *User profile display*
 
+#### **Update** - Edit Profile
 ![User Update - Edit Profile](screenshots/User_Update.png)
 *Profile editing with password change*
 
+#### **Delete** - Account Deletion
 ![User Delete - Account Deletion](screenshots/User_Delete.png)
 *Account deletion confirmation*
 
+
+
 ### Cloth **CRUD** Operations
+
+#### **Create** - Add New Listing
 ![Cloth Create - Add Listing](screenshots/Cloth_Create.png)
 *Create new clothing listing*
 
+#### **Read** - Browse Listings
 ![Cloth Read - Browse Items](screenshots/Cloth_Read.png)
 *View all clothing items*
 
+#### **Update** - Edit Listing
 ![Cloth Update - Edit Listing](screenshots/Cloth_Update.png)
 *Edit listing details and status*
 
+#### **Delete** - Remove Listing
 ![Cloth Delete - Remove Listing](screenshots/Cloth_Delete.png)
 *Delete listing confirmation*
 
+
+
 ### Order **CRUD** Operations
+
+#### **Create** - Place Order
 ![Order Create - Checkout](screenshots/Order_Create.png)
 *Place new order with payment*
 
+#### **Read** - View Order History
 ![Order Read - Order History](screenshots/Order_Read.png)
 *View order history*
 
+#### **Update** - Update Payment
 ![Order Update - Payment Upload](screenshots/Order_Update.png)
 *Update order payment status*
 
+#### **Delete** - Cancel Order
 ![Order Delete - Cancel Order](screenshots/Order_Delete.png)
 *Cancel unpaid order*
 
