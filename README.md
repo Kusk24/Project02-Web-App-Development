@@ -4,9 +4,11 @@ A modern, full-stack clothing e-commerce platform with peer-to-peer marketplace 
 
 ## 👥 Team Members
 
-- **Win Yu Maung** - [GitHub Profile](https://github.com/Kusk24)
-- **Sam Yati** - [GitHub Profile](https://github.com/narattscoward)
-- **Phonvan Deelertpattana** - [GitHub Profile](https://github.com/IamPailin)
+- **Win Yu Maung** - [GitHub Profile](https://github.com/Kusk24)   ,   [Repo](https://github.com/Kusk24/kusk24.github.io)
+  
+- **Sam Yati** - [GitHub Profile](https://github.com/narattscoward)    ,   [Repo](https://github.com/narattscoward/narattscoward.github.io)
+  
+- **Phonvan Deelertpattana** - [GitHub Profile](https://github.com/IamPailin)   ,   [Repo](https://github.com/IamPailin/IamPailin.github.io)
 
 ## 🎥 Demo Video
 
