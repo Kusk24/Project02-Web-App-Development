@@ -95,17 +95,6 @@ export default function MarketplacePage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--cream)' }}>
-        <div className="text-center">
-          <div className="text-6xl mb-4 animate-bounce-soft">⏳</div>
-          <p className="text-lg font-medium" style={{ color: 'var(--brown-soft)' }}>Loading products...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--cream)' }}>
       <Header />
@@ -177,13 +166,12 @@ export default function MarketplacePage() {
       {/* Listings Grid */}
       <section className="py-16 flex-grow">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold" style={{ color: 'var(--brown-soft)' }}>
-              {filteredListings.length} {filteredListings.length === 1 ? 'Item' : 'Items'} Available
-            </h2>
-          </div>
-
-          {filteredListings.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4 animate-bounce-soft">⏳</div>
+              <p className="text-lg font-medium" style={{ color: 'var(--brown-soft)' }}>Loading products...</p>
+            </div>
+          ) : filteredListings.length === 0 ? (
             <div className="text-center py-16 rounded-3xl shadow-xl" style={{ backgroundColor: 'white' }}>
               <div className="text-6xl mb-4">😔</div>
               <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--brown-soft)' }}>
@@ -194,8 +182,14 @@ export default function MarketplacePage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredListings.map((product) => {
+            <>
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-2xl font-bold" style={{ color: 'var(--brown-soft)' }}>
+                  {filteredListings.length} {filteredListings.length === 1 ? 'Item' : 'Items'} Available
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredListings.map((product) => {
                 const isOwnListing = user && product.user === user._id;
                 
                 return (
@@ -218,7 +212,8 @@ export default function MarketplacePage() {
                   </div>
                 );
               })}
-            </div>
+              </div>
+            </>
           )}
         </div>
       </section>
