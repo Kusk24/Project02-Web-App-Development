@@ -1,5 +1,6 @@
 import connectDB from '../../../../lib/mongodb';
 import Sale from '../../../../models/Sale';
+import Cloth from '../../../../models/Cloth';
 
 // GET order by ID
 export async function GET(req, { params }) {
@@ -75,7 +76,7 @@ export async function PATCH(req, { params }) {
   }
 }
 
-// DELETE order by ID
+// DELETE order by ID (Cancel order)
 export async function DELETE(req, { params }) {
   try {
     await connectDB();
@@ -87,9 +88,26 @@ export async function DELETE(req, { params }) {
       return Response.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    return Response.json({ message: 'Order deleted successfully' });
+    // Reactivate user listings that were marked as sold
+    console.log('🔄 Order cancelled, reactivating user listings...');
+    for (const item of deletedOrder.items) {
+      try {
+        const cloth = await Cloth.findById(item.id);
+        if (cloth && cloth.user && cloth.status === 'sold') {
+          // This was a user listing marked as sold, reactivate it
+          cloth.status = 'active';
+          await cloth.save();
+          console.log(`✅ Reactivated cloth ${cloth._id} (${cloth.name}) - now ACTIVE`);
+        }
+      } catch (err) {
+        console.error(`❌ Error reactivating cloth ${item.id}:`, err);
+        // Continue with cancellation even if reactivation fails
+      }
+    }
+
+    return Response.json({ message: 'Order cancelled successfully' });
   } catch (error) {
     console.error('Error deleting order:', error);
-    return Response.json({ error: 'Failed to delete order' }, { status: 500 });
+    return Response.json({ error: 'Failed to cancel order' }, { status: 500 });
   }
 }

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { ShoppingBag } from "lucide-react";
 
-export default function ProductCard({ product, onAddToCart }) {
+export default function ProductCard({ product, onAddToCart, isOwnListing = false, showListedBy = false }) {
   const [imageError, setImageError] = useState(false);
 
   return (
@@ -77,17 +77,40 @@ export default function ProductCard({ product, onAddToCart }) {
               {product.description}
             </p>
           )}
+
+          {/* Condition (for user listings) */}
+          {product.condition && (
+            <p className="text-sm mb-1" style={{ color: 'var(--gray-light)' }}>
+              {product.condition}
+            </p>
+          )}
+
+          {/* Listed By (for marketplace) */}
+          {showListedBy && product.userName && (
+            <p className="text-sm font-medium mb-3" style={{ color: 'var(--brown-soft)' }}>
+              Listed by {product.userName}
+            </p>
+          )}
         </div>
 
         {/* Add to Cart Button */}
-        <button
-          onClick={() => onAddToCart(product)}
-          className="w-full py-3 px-4 rounded-full transition-all duration-300 font-bold shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2"
-          style={{ backgroundColor: 'var(--coral)', color: 'white' }}
-        >
-          <ShoppingBag className="w-5 h-5" />
-          Add to Cart
-        </button>
+        {isOwnListing ? (
+          <div
+            className="w-full py-3 px-4 rounded-full font-bold shadow-md text-center"
+            style={{ backgroundColor: 'var(--gray-light)', color: 'white', cursor: 'not-allowed' }}
+          >
+            Your Listing
+          </div>
+        ) : (
+          <button
+            onClick={() => onAddToCart(product)}
+            className="w-full py-3 px-4 rounded-full transition-all duration-300 font-bold shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2"
+            style={{ backgroundColor: 'var(--coral)', color: 'white' }}
+          >
+            <ShoppingBag className="w-5 h-5" />
+            Add to Cart
+          </button>
+        )}
       </div>
     </div>
   );

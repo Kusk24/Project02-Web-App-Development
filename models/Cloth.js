@@ -49,7 +49,43 @@ const clothSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  // User-specific fields for peer-to-peer marketplace
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null // null = shop item, ObjectId = user listing
+  },
+  userName: {
+    type: String,
+    default: null
+  },
+  userEmail: {
+    type: String,
+    default: null
+  },
+  condition: {
+    type: String,
+    enum: ['New', 'Like New', 'Good', 'Fair', null],
+    default: null // Only for user listings
+  },
+  brand: {
+    type: String,
+    default: null
+  },
+  status: {
+    type: String,
+    enum: ['active', 'sold', 'unlisted', null],
+    default: null // null = shop item (always active), others for user listings
+  },
+  views: {
+    type: Number,
+    default: 0
+  },
   createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
     type: Date,
     default: Date.now
   }
