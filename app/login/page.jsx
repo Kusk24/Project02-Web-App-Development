@@ -39,7 +39,8 @@ export default function LoginPage() {
     setLoading(true);
     const result = await login(email, password);
     if (result.success) {
-      router.push("/profile");
+      // Force a reload to ensure auth state is fully loaded
+      window.location.href = "/profile";
     } else {
       alert(result.message || "Login failed");
     }
