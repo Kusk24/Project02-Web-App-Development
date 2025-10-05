@@ -28,26 +28,93 @@ StyleHub is a comprehensive e-commerce platform that allows users to:
 
 The platform features a kawaii-inspired design with pastel colors, smooth animations, and an intuitive user interface.
 
-## 🏗️ Tech Stack
+## 📸 Screenshots
 
-### Frontend
-- **Framework**: Next.js 15 (App Router)
-- **UI Library**: React 19
-- **Styling**: Tailwind CSS 4, Custom CSS Variables
-- **Components**: shadcn/ui (Card, Button, Input, Select, Badge)
-- **Icons**: Lucide React
-- **State Management**: React Context API (AuthContext, CartContext)
+### User **CRUD** Operations
 
-### Backend
-- **Runtime**: Node.js
-- **Database**: MongoDB with Mongoose ODM
-- **Authentication**: JWT (JSON Web Tokens) with HTTP-only cookies
-- **Password Security**: bcrypt for hashing
-- **API**: RESTful API with Next.js Route Handlers
+#### **Create** - User Registration
+![User Create - Registration](screenshots/User_Create.png)
+*User registration with validation*
 
-### Deployment
-- **Platform**: Azure
-- **Database**: MongoDB Atlas
+#### **Read** - View Profile
+![User Read - Profile View](screenshots/User_Read.png)
+*User profile display*
+
+#### **Update** - Edit Profile
+![User Update - Edit Profile](screenshots/User_Update.png)
+*Profile editing with password change*
+
+#### **Delete** - Account Deletion
+![User Delete - Account Deletion](screenshots/User_Delete.png)
+*Account deletion confirmation*
+
+
+
+### Cloth **CRUD** Operations
+
+#### **Create** - Add New Listing
+![Cloth Create - Add Listing](screenshots/Cloth_Create.png)
+*Create new clothing listing*
+
+#### **Read** - Browse Listings
+![Cloth Read - Browse Items](screenshots/Cloth_Read.png)
+*View all clothing items*
+
+#### **Update** - Edit Listing
+![Cloth Update - Edit Listing](screenshots/Cloth_Update.png)
+*Edit listing details and status*
+
+#### **Delete** - Remove Listing
+![Cloth Delete - Remove Listing](screenshots/Cloth_Delete.png)
+*Delete listing confirmation*
+
+
+
+### Order **CRUD** Operations
+
+#### **Create** - Place Order
+![Order Create - Checkout](screenshots/Order_Create.png)
+*Place new order with payment*
+
+#### **Read** - View Order History
+![Order Read - Order History](screenshots/Order_Read.png)
+*View order history*
+
+#### **Update** - Update Payment
+![Order Update - Payment Upload](screenshots/Order_Update.png)
+*Update order payment status*
+
+#### **Delete** - Cancel Order
+![Order Delete - Cancel Order](screenshots/Order_Delete.png)
+*Cancel unpaid order*
+
+
+## 📝 API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/session` - Get current user session
+
+### Users
+- `PATCH /api/users` - Update user profile
+- `DELETE /api/users` - Delete user account
+
+### Clothes
+- `GET /api/clothes` - Get all clothes (with filters)
+- `POST /api/clothes` - Create new listing
+- `GET /api/clothes/[id]` - Get single cloth
+- `PATCH /api/clothes/[id]` - Update cloth
+- `DELETE /api/clothes/[id]` - Delete cloth
+
+### Orders
+- `GET /api/orders` - Get user's orders
+- `POST /api/orders` - Create new order
+- `GET /api/orders/[id]` - Get single order
+- `PATCH /api/orders/[id]` - Update order status
+- `DELETE /api/orders/[id]` - Cancel order
+
 
 ## � Data Models (CRUD Operations)
 
@@ -114,92 +181,7 @@ Complete order management with payment tracking.
 - Order status: `paid`, `unpaid`, `pending`
 - 24-hour cancellation deadline for unpaid orders
 - Automatic reactivation of user listings on cancellation
-
-## 📝 API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-- `GET /api/auth/session` - Get current user session
-
-### Users
-- `PATCH /api/users` - Update user profile
-- `DELETE /api/users` - Delete user account
-
-### Clothes
-- `GET /api/clothes` - Get all clothes (with filters)
-- `POST /api/clothes` - Create new listing
-- `GET /api/clothes/[id]` - Get single cloth
-- `PATCH /api/clothes/[id]` - Update cloth
-- `DELETE /api/clothes/[id]` - Delete cloth
-
-### Orders
-- `GET /api/orders` - Get user's orders
-- `POST /api/orders` - Create new order
-- `GET /api/orders/[id]` - Get single order
-- `PATCH /api/orders/[id]` - Update order status
-- `DELETE /api/orders/[id]` - Cancel order
-
-## 📸 Screenshots
-
-### User **CRUD** Operations
-
-#### **Create** - User Registration
-![User Create - Registration](screenshots/User_Create.png)
-*User registration with validation*
-
-#### **Read** - View Profile
-![User Read - Profile View](screenshots/User_Read.png)
-*User profile display*
-
-#### **Update** - Edit Profile
-![User Update - Edit Profile](screenshots/User_Update.png)
-*Profile editing with password change*
-
-#### **Delete** - Account Deletion
-![User Delete - Account Deletion](screenshots/User_Delete.png)
-*Account deletion confirmation*
-
-
-
-### Cloth **CRUD** Operations
-
-#### **Create** - Add New Listing
-![Cloth Create - Add Listing](screenshots/Cloth_Create.png)
-*Create new clothing listing*
-
-#### **Read** - Browse Listings
-![Cloth Read - Browse Items](screenshots/Cloth_Read.png)
-*View all clothing items*
-
-#### **Update** - Edit Listing
-![Cloth Update - Edit Listing](screenshots/Cloth_Update.png)
-*Edit listing details and status*
-
-#### **Delete** - Remove Listing
-![Cloth Delete - Remove Listing](screenshots/Cloth_Delete.png)
-*Delete listing confirmation*
-
-
-
-### Order **CRUD** Operations
-
-#### **Create** - Place Order
-![Order Create - Checkout](screenshots/Order_Create.png)
-*Place new order with payment*
-
-#### **Read** - View Order History
-![Order Read - Order History](screenshots/Order_Read.png)
-*View order history*
-
-#### **Update** - Update Payment
-![Order Update - Payment Upload](screenshots/Order_Update.png)
-*Update order payment status*
-
-#### **Delete** - Cancel Order
-![Order Delete - Cancel Order](screenshots/Order_Delete.png)
-*Cancel unpaid order*
+- 
 
 ## 🚀 Features
 
