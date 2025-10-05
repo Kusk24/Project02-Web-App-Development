@@ -10,7 +10,7 @@ A modern, full-stack clothing e-commerce platform with peer-to-peer marketplace 
 
 ## 🎥 Demo Video
 
-Watch our project demo: [YouTube Link](https://youtu.be/WV-b_hDXUvw)
+Watch our project demo: [YouTube Link](https://youtu.be/hnb8etONHA4)
 
 ## 🚀 Live Deployment
 
