@@ -39,12 +39,15 @@ export default function LoginPage() {
     setLoading(true);
     const result = await login(email, password);
     if (result.success) {
+      // Small delay to ensure cookie is set before redirect
+      await new Promise(resolve => setTimeout(resolve, 100));
       // Force a reload to ensure auth state is fully loaded
-      window.location.href = "/profile";
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+      window.location.href = `${basePath}/profile`;
     } else {
       alert(result.message || "Login failed");
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   // Show loading while checking auth status

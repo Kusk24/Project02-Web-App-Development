@@ -25,7 +25,7 @@ export function middleware(request) {
   console.log('Middleware - Path:', pathname, 'Auth Token:', !!authToken?.value);
   
   // Protected routes that require authentication
-  const protectedRoutes = ['/profile', '/checkout', '/history'];
+  const protectedRoutes = ['/checkout'];
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
   
   // Auth routes - only redirect if user is actually authenticated
